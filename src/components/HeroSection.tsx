@@ -1,29 +1,12 @@
 /**
  * HeroSection.tsx — Doodley Interactive Envelope Portfolio
  * Sanjana Vichare · hand-drawn doodle UI + scroll-driven envelope reveal
- *
- * Scroll stage map (700vh, sticky):
- *   Stage 1  page_load       Envelope spring-drops from top (y: -200→0, bounce)
- *   Stage 2  0.02–0.10       Envelope sketch-wobbles on first scroll
- *   Stage 3  0.28–0.44       Flap rotates open (rotateX 0→-120°)
- *   Stage 4  0.44–0.64       Letter pulls upward easeOutBack (-220px)
- *   Stage 5  0.62–0.72       Envelope fades out
- *   Stage 6  0.64–0.82       Letter resets to center (slow settle)
- *   Stage 7  0.68–0.82       Paper physics: bend, shadow, width stretch, scale expand, wiggle
- *   Stage 8  0.76–0.88       Paper bloom overlay fills screen
- *   Stage 9  0.88–0.97       Hero text draws in (staggered fade-up)
- *   Stage 10 0.95–1.00       Avatar floats in from right + continuous bob
- *
- * Paper physics:
- *   Trick 1  0.55–0.68       Paper bends (rotateX 8→0°, perspective 1200px)
- *   Trick 2  0.55–0.72       Dynamic shadow deepens as paper lifts
- *   Trick 3  0.68–0.82       Width stretches first, then scale expands
- *   Trick 4  0.55–0.70       Tiny paper wiggle rotate (-3→1°)
- *   Bonus    fold crease      SVG crease fades as paper expands
- *
- * Decorations : floating stars, arrows, sparkles, code brackets, game controller
- * Particles   : 14 doodle-star bursts on letter pull
- * Micro       : envelope hover shake, button squishy bounce, avatar wave on hover
+ * COLOR SCHEME: Lotus pond palette
+ *   #0A3323  Dark green   — ink, outlines, primary text
+ *   #839958  Moss green   — dashed lines, secondary strokes
+ *   #F7F4D5  Beige        — envelope/paper fill, card backgrounds
+ *   #D3968C  Rosy brown   — decorative accents, light strokes
+ *   #105666  Midnight green — wax seal, accent highlights
  */
 
 import {
@@ -45,6 +28,7 @@ import {
   memo,
 } from "react";
 import Avatar3D from "@/components/Avatar3D";
+import { NavLink } from "react-router-dom";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
@@ -86,7 +70,7 @@ const DoodleParticleBurst = memo(({ active }: { active: boolean }) => {
   ) => {
     ctx.save();
     ctx.globalAlpha = opacity;
-    ctx.strokeStyle = "#1F3D32";
+    ctx.strokeStyle = "#0A3323"; // ← Dark green (was #1F3D32)
     ctx.lineWidth = 1.5;
     ctx.lineCap = "round";
     ctx.translate(x, y);
@@ -100,7 +84,7 @@ const DoodleParticleBurst = memo(({ active }: { active: boolean }) => {
     }
     ctx.beginPath();
     ctx.arc(0, 0, size * 0.15, 0, Math.PI * 2);
-    ctx.fillStyle = "#2F6F55";
+    ctx.fillStyle = "#105666"; // ← Midnight green (was #2F6F55)
     ctx.fill();
     ctx.restore();
   };
@@ -197,37 +181,37 @@ const BG_DOODLES = [
 
 const DoodleStar = ({ size = 14 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-    <line x1="10" y1="1" x2="10" y2="19" stroke="#1F3D32" strokeWidth="2" strokeLinecap="round" />
-    <line x1="1" y1="10" x2="19" y2="10" stroke="#1F3D32" strokeWidth="2" strokeLinecap="round" />
-    <line x1="3.5" y1="3.5" x2="16.5" y2="16.5" stroke="#1F3D32" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="16.5" y1="3.5" x2="3.5" y2="16.5" stroke="#1F3D32" strokeWidth="1.5" strokeLinecap="round" />
-    <circle cx="10" cy="10" r="1.5" fill="#2F6F55" />
+    <line x1="10" y1="1" x2="10" y2="19" stroke="#0A3323" strokeWidth="2" strokeLinecap="round" />
+    <line x1="1" y1="10" x2="19" y2="10" stroke="#0A3323" strokeWidth="2" strokeLinecap="round" />
+    <line x1="3.5" y1="3.5" x2="16.5" y2="16.5" stroke="#0A3323" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="16.5" y1="3.5" x2="3.5" y2="16.5" stroke="#0A3323" strokeWidth="1.5" strokeLinecap="round" />
+    <circle cx="10" cy="10" r="1.5" fill="#105666" />
   </svg>
 );
 
 const DoodleArrow = () => (
   <svg width="36" height="28" viewBox="0 0 36 28" fill="none">
-    <path d="M2,14 Q10,11 22,13 Q28,14 32,10" stroke="#1F3D32" strokeWidth="2" strokeLinecap="round" fill="none" />
-    <path d="M27,6 Q32,10 28,15" stroke="#1F3D32" strokeWidth="2" strokeLinecap="round" fill="none" />
+    <path d="M2,14 Q10,11 22,13 Q28,14 32,10" stroke="#0A3323" strokeWidth="2" strokeLinecap="round" fill="none" />
+    <path d="M27,6 Q32,10 28,15" stroke="#0A3323" strokeWidth="2" strokeLinecap="round" fill="none" />
   </svg>
 );
 
 const DoodleSparkle = () => (
   <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-    <path d="M11,2 Q11.5,11 11,20" stroke="#2F6F55" strokeWidth="1.8" strokeLinecap="round" />
-    <path d="M2,11 Q11,11.5 20,11" stroke="#2F6F55" strokeWidth="1.8" strokeLinecap="round" />
-    <path d="M4.5,4.5 Q11,11 17.5,17.5" stroke="#A8C9B6" strokeWidth="1.4" strokeLinecap="round" />
-    <path d="M17.5,4.5 Q11,11 4.5,17.5" stroke="#A8C9B6" strokeWidth="1.4" strokeLinecap="round" />
-    <circle cx="11" cy="11" r="2" fill="#2F6F55" />
+    <path d="M11,2 Q11.5,11 11,20" stroke="#105666" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M2,11 Q11,11.5 20,11" stroke="#105666" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M4.5,4.5 Q11,11 17.5,17.5" stroke="#839958" strokeWidth="1.4" strokeLinecap="round" />
+    <path d="M17.5,4.5 Q11,11 4.5,17.5" stroke="#839958" strokeWidth="1.4" strokeLinecap="round" />
+    <circle cx="11" cy="11" r="2" fill="#105666" />
   </svg>
 );
 
 const DoodleCode = () => (
   <svg width="36" height="20" viewBox="0 0 36 20" fill="none">
-    <path d="M10,4 Q5,10 10,16" stroke="#1F3D32" strokeWidth="2" strokeLinecap="round" fill="none" />
-    <path d="M26,4 Q31,10 26,16" stroke="#1F3D32" strokeWidth="2" strokeLinecap="round" fill="none" />
-    <path d="M15,2 Q17,10 15,18" stroke="#A8C9B6" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-    <path d="M21,2 Q19,10 21,18" stroke="#A8C9B6" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+    <path d="M10,4 Q5,10 10,16" stroke="#0A3323" strokeWidth="2" strokeLinecap="round" fill="none" />
+    <path d="M26,4 Q31,10 26,16" stroke="#0A3323" strokeWidth="2" strokeLinecap="round" fill="none" />
+    <path d="M15,2 Q17,10 15,18" stroke="#839958" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+    <path d="M21,2 Q19,10 21,18" stroke="#839958" strokeWidth="1.5" strokeLinecap="round" fill="none" />
   </svg>
 );
 
@@ -274,32 +258,38 @@ const BackgroundDoodles = memo(({ visible }: { visible: boolean }) => (
 
 const DoodleEnvelopeBody = () => (
   <svg viewBox="0 0 640 260" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", display: "block" }}>
-    <path d="M8,8 Q320,5 632,8 Q636,130 632,252 Q320,256 8,252 Q4,130 8,8Z" fill="#E9F2EC" />
-    <path d={ENVELOPE_PATHS.top} stroke="#1F3D32" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-    <path d={ENVELOPE_PATHS.right} stroke="#1F3D32" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-    <path d={ENVELOPE_PATHS.bottom} stroke="#1F3D32" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-    <path d={ENVELOPE_PATHS.left} stroke="#1F3D32" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-    <path d={ENVELOPE_PATHS.foldL} stroke="#A8C9B6" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="5 4" fill="none" opacity="0.7" />
-    <path d={ENVELOPE_PATHS.foldR} stroke="#A8C9B6" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="5 4" fill="none" opacity="0.7" />
-    <path d={ENVELOPE_PATHS.foldTL} stroke="#CFE0D8" strokeWidth="1" strokeLinecap="round" strokeDasharray="4 5" fill="none" opacity="0.5" />
-    <path d={ENVELOPE_PATHS.foldTR} stroke="#CFE0D8" strokeWidth="1" strokeLinecap="round" strokeDasharray="4 5" fill="none" opacity="0.5" />
+    {/* Body fill: Beige */}
+    <path d="M8,8 Q320,5 632,8 Q636,130 632,252 Q320,256 8,252 Q4,130 8,8Z" fill="#F7F4D5" />
+    <path d={ENVELOPE_PATHS.top} stroke="#0A3323" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+    <path d={ENVELOPE_PATHS.right} stroke="#0A3323" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+    <path d={ENVELOPE_PATHS.bottom} stroke="#0A3323" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+    <path d={ENVELOPE_PATHS.left} stroke="#0A3323" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+    {/* Fold lines: Moss green */}
+    <path d={ENVELOPE_PATHS.foldL} stroke="#839958" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="5 4" fill="none" opacity="0.7" />
+    <path d={ENVELOPE_PATHS.foldR} stroke="#839958" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="5 4" fill="none" opacity="0.7" />
+    {/* Inner fold hints: Rosy brown */}
+    <path d={ENVELOPE_PATHS.foldTL} stroke="#D3968C" strokeWidth="1" strokeLinecap="round" strokeDasharray="4 5" fill="none" opacity="0.5" />
+    <path d={ENVELOPE_PATHS.foldTR} stroke="#D3968C" strokeWidth="1" strokeLinecap="round" strokeDasharray="4 5" fill="none" opacity="0.5" />
     {/* Wax seal */}
-    <circle cx="320" cy="148" r="22" fill="#E9F2EC" stroke="#1F3D32" strokeWidth="2.2" />
-    <circle cx="320" cy="148" r="13" fill="#2F6F55" opacity="0.18" stroke="#2F6F55" strokeWidth="1.5" />
-    <path d="M313,141 Q320,148 327,155" stroke="#1F3D32" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-    <path d="M327,141 Q320,148 313,155" stroke="#1F3D32" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-    <path d="M12,258 Q320,262 632,258 Q634,264 320,268 Q6,264 12,258Z" fill="#1F3D32" opacity="0.07" />
+    <circle cx="320" cy="148" r="22" fill="#F7F4D5" stroke="#0A3323" strokeWidth="2.2" />
+    <circle cx="320" cy="148" r="13" fill="#105666" opacity="0.18" stroke="#105666" strokeWidth="1.5" />
+    <path d="M313,141 Q320,148 327,155" stroke="#0A3323" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+    <path d="M327,141 Q320,148 313,155" stroke="#0A3323" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+    {/* Drop shadow tint */}
+    <path d="M12,258 Q320,262 632,258 Q634,264 320,268 Q6,264 12,258Z" fill="#0A3323" opacity="0.07" />
   </svg>
 );
 
 const DoodleFlapSVG = () => (
   <svg viewBox="0 0 640 165" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", display: "block" }}>
-    <path d="M6,2 Q320,0 634,2 L320,160 Z" fill="#DDE8E2" />
-    <path d={ENVELOPE_PATHS.flapL} stroke="#1F3D32" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-    <path d={ENVELOPE_PATHS.flapR} stroke="#1F3D32" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-    <path d="M4,2 Q320,0 636,2" stroke="#1F3D32" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-    <path d="M80,2 Q200,56 320,160" stroke="#A8C9B6" strokeWidth="0.8" strokeLinecap="round" strokeDasharray="4 5" fill="none" opacity="0.5" />
-    <path d="M560,2 Q440,56 320,160" stroke="#A8C9B6" strokeWidth="0.8" strokeLinecap="round" strokeDasharray="4 5" fill="none" opacity="0.5" />
+    {/* Flap fill: slightly darker beige for depth */}
+    <path d="M6,2 Q320,0 634,2 L320,160 Z" fill="#EDE9C4" />
+    <path d={ENVELOPE_PATHS.flapL} stroke="#0A3323" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+    <path d={ENVELOPE_PATHS.flapR} stroke="#0A3323" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+    <path d="M4,2 Q320,0 636,2" stroke="#0A3323" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+    {/* Inner guide lines: moss green */}
+    <path d="M80,2 Q200,56 320,160" stroke="#839958" strokeWidth="0.8" strokeLinecap="round" strokeDasharray="4 5" fill="none" opacity="0.5" />
+    <path d="M560,2 Q440,56 320,160" stroke="#839958" strokeWidth="0.8" strokeLinecap="round" strokeDasharray="4 5" fill="none" opacity="0.5" />
   </svg>
 );
 
@@ -310,28 +300,23 @@ const DoodleFlapSVG = () => (
 const DoodleLetterPreview = ({ creaseOpacity = 0 }: { creaseOpacity?: number }) => (
   <div style={{
     width: "100%", height: "100%",
-    background: "#F5FAF7",
+    background: "#F7F4D5", // ← Beige
     borderRadius: "6px",
-    border: "2.5px solid #1F3D32",
+    border: "2.5px solid #0A3323", // ← Dark green
     padding: "24px 28px",
     boxSizing: "border-box",
     display: "flex", flexDirection: "column", gap: "11px",
     position: "relative",
-    boxShadow: "4px 4px 0px #1F3D32",
+    boxShadow: "4px 4px 0px #0A3323", // ← Dark green
   }}>
     {/* Torn paper edge */}
     <svg viewBox="0 0 300 10" style={{ position: "absolute", top: -2, left: 0, width: "100%", pointerEvents: "none" }}>
       <path
         d="M0,5 Q20,2 40,6 Q60,9 80,4 Q100,1 120,7 Q140,10 160,4 Q180,0 200,6 Q220,9 240,3 Q260,0 280,5 Q290,7 300,4"
-        stroke="#1F3D32" strokeWidth="2.5" fill="none" strokeLinecap="round"
+        stroke="#0A3323" strokeWidth="2.5" fill="none" strokeLinecap="round"
       />
     </svg>
 
-    {/*
-      Bonus — paper fold crease line.
-      Appears during the pull stage, fades to 0 as the paper fully expands.
-      Simulates a horizontal fold crease from being inside the envelope.
-    */}
     {creaseOpacity > 0.01 && (
       <svg
         viewBox="0 0 400 6"
@@ -348,7 +333,7 @@ const DoodleLetterPreview = ({ creaseOpacity = 0 }: { creaseOpacity?: number }) 
       >
         <path
           d="M4,3 Q60,1 120,3.5 Q180,5 240,2.5 Q300,1 360,3.5 Q385,4.5 400,3"
-          stroke="#A8C9B6"
+          stroke="#839958" // ← Moss green
           strokeWidth="1.2"
           strokeLinecap="round"
           strokeDasharray="6 5"
@@ -359,17 +344,17 @@ const DoodleLetterPreview = ({ creaseOpacity = 0 }: { creaseOpacity?: number }) 
 
     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
       <DoodleStar size={12} />
-      <span style={{ fontSize: "8px", letterSpacing: "0.22em", textTransform: "uppercase", color: "#2F6F55", fontWeight: 700 }}>
+      <span style={{ fontSize: "8px", letterSpacing: "0.22em", textTransform: "uppercase", color: "#105666", fontWeight: 700 }}>
         Portfolio · 2025
       </span>
     </div>
 
-    <div style={{ fontSize: "9px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#2F6F55", fontWeight: 600, opacity: 0.85 }}>
+    <div style={{ fontSize: "9px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#839958", fontWeight: 600, opacity: 0.85 }}>
       Mobile Developer · Flutter · Game Dev
     </div>
 
     <div style={{
-      fontSize: "30px", fontWeight: 800, color: "#1F3D32",
+      fontSize: "30px", fontWeight: 800, color: "#0A3323", // ← Dark green
       lineHeight: 1.08,
       fontFamily: "'Caveat', 'Patrick Hand', cursive, Georgia, serif",
       letterSpacing: "0.5px",
@@ -377,24 +362,25 @@ const DoodleLetterPreview = ({ creaseOpacity = 0 }: { creaseOpacity?: number }) 
       Sanjana<br />Vichare
     </div>
 
+    {/* Underline: Midnight green */}
     <svg viewBox="0 0 140 8" style={{ width: "140px", height: "8px" }}>
-      <path d="M2,5 Q35,2 70,5 Q105,8 138,4" stroke="#2F6F55" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      <path d="M2,5 Q35,2 70,5 Q105,8 138,4" stroke="#105666" strokeWidth="2.5" fill="none" strokeLinecap="round" />
     </svg>
 
-    <div style={{ fontSize: "10px", color: "#2F6F55", opacity: 0.7, lineHeight: 1.6 }}>
+    <div style={{ fontSize: "10px", color: "#839958", opacity: 0.8, lineHeight: 1.6 }}>
       Building creative &amp; interactive<br />technology that people love ✦
     </div>
 
     <div style={{ display: "flex", gap: "6px", marginTop: "2px" }}>
-      {(["#2F6F55", "#A8C9B6", "#CFE0D8"] as const).map((c, i) => (
-        <div key={i} style={{ width: "7px", height: "7px", borderRadius: "50%", background: c, border: "1.5px solid #1F3D32" }} />
+      {(["#105666", "#839958", "#D3968C"] as const).map((c, i) => (
+        <div key={i} style={{ width: "7px", height: "7px", borderRadius: "50%", background: c, border: "1.5px solid #0A3323" }} />
       ))}
     </div>
   </div>
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Doodle Button Wrapper
+// Doodle Button Wrapper — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 
 const DoodleButtonWrap = ({ children }: { children: React.ReactNode }) => (
@@ -430,15 +416,19 @@ const DoodleController = ({ visible }: { visible: boolean }) => (
       >
         <svg width="58" height="40" viewBox="0 0 58 40" fill="none">
           <path d="M6,14 Q2,20 4,28 Q6,36 14,37 Q20,38 24,32 Q26,28 29,28 Q32,28 34,32 Q38,38 44,37 Q52,36 54,28 Q56,20 52,14 Q46,6 38,8 Q34,10 29,10 Q24,10 20,8 Q12,6 6,14Z"
-            fill="#E9F2EC" stroke="#1F3D32" strokeWidth="2.2" strokeLinejoin="round" />
-          <rect x="11" y="18" width="4" height="10" rx="1" fill="#A8C9B6" stroke="#1F3D32" strokeWidth="1.5" />
-          <rect x="8" y="21" width="10" height="4" rx="1" fill="#A8C9B6" stroke="#1F3D32" strokeWidth="1.5" />
-          <circle cx="42" cy="20" r="2.5" fill="#2F6F55" stroke="#1F3D32" strokeWidth="1.5" />
-          <circle cx="47" cy="25" r="2.5" fill="#A8C9B6" stroke="#1F3D32" strokeWidth="1.5" />
-          <circle cx="42" cy="30" r="2.5" fill="#CFE0D8" stroke="#1F3D32" strokeWidth="1.5" />
-          <circle cx="37" cy="25" r="2.5" fill="#E9F2EC" stroke="#1F3D32" strokeWidth="1.5" />
-          <rect x="24" y="21" width="5" height="3" rx="1.5" fill="#A8C9B6" stroke="#1F3D32" strokeWidth="1.2" />
-          <path d="M8,38 Q29,42 50,38" stroke="#1F3D32" strokeWidth="1.5" strokeLinecap="round" opacity="0.15" />
+            fill="#F7F4D5" stroke="#0A3323" strokeWidth="2.2" strokeLinejoin="round" />
+          {/* D-pad: Rosy brown */}
+          <rect x="11" y="18" width="4" height="10" rx="1" fill="#D3968C" stroke="#0A3323" strokeWidth="1.5" />
+          <rect x="8" y="21" width="10" height="4" rx="1" fill="#D3968C" stroke="#0A3323" strokeWidth="1.5" />
+          {/* Face buttons: palette colors */}
+          <circle cx="42" cy="20" r="2.5" fill="#105666" stroke="#0A3323" strokeWidth="1.5" />
+          <circle cx="47" cy="25" r="2.5" fill="#839958" stroke="#0A3323" strokeWidth="1.5" />
+          <circle cx="42" cy="30" r="2.5" fill="#D3968C" stroke="#0A3323" strokeWidth="1.5" />
+          <circle cx="37" cy="25" r="2.5" fill="#F7F4D5" stroke="#0A3323" strokeWidth="1.5" />
+          {/* Start button */}
+          <rect x="24" y="21" width="5" height="3" rx="1.5" fill="#839958" stroke="#0A3323" strokeWidth="1.2" />
+          {/* Shadow */}
+          <path d="M8,38 Q29,42 50,38" stroke="#0A3323" strokeWidth="1.5" strokeLinecap="round" opacity="0.15" />
         </svg>
       </motion.div>
     )}
@@ -460,11 +450,11 @@ const PointingArrow = ({ visible }: { visible: boolean }) => (
         style={{ position: "absolute", right: "calc(50% - 20px)", top: "38%", zIndex: 8, pointerEvents: "none" }}
       >
         <svg width="60" height="30" viewBox="0 0 60 30" fill="none">
-          <path d="M4,15 Q20,10 40,14 Q50,15 54,10" stroke="#2F6F55" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          <path d="M48,6 Q54,10 50,16" stroke="#2F6F55" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <path d="M4,15 Q20,10 40,14 Q50,15 54,10" stroke="#105666" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <path d="M48,6 Q54,10 50,16" stroke="#105666" strokeWidth="2.5" strokeLinecap="round" fill="none" />
         </svg>
         <div style={{
-          fontSize: "9px", color: "#2F6F55", fontWeight: 600,
+          fontSize: "9px", color: "#105666", fontWeight: 600,
           letterSpacing: "0.1em", textTransform: "uppercase",
           fontFamily: "'Caveat', cursive, sans-serif",
           opacity: 0.8, marginTop: "2px", textAlign: "center",
@@ -488,51 +478,34 @@ const HeroSection = () => {
     offset: ["start start", "end end"],
   });
 
-  // ─────────────────────────────────────────────────────────────────────
-  // All scroll-driven MotionValues — driven directly into motion.div style,
-  // NO useState subscribers. Springs added on key values for smoothness.
-  // ─────────────────────────────────────────────────────────────────────
-
-  // ── Flap (0.28–0.44) ──
   const flapRotate = useTransform(scrollYProgress, [0.28, 0.44], [0, -120]);
   const flapRotateSp = useSpring(flapRotate, { stiffness: 80, damping: 18 });
 
-  // ── Letter opacity: fades in as it emerges (0.44–0.56) ──
   const letterOpacity = useTransform(scrollYProgress, [0.44, 0.56], [0, 1]);
 
-  // ── Letter pull Y: eased via spring so motion is silky (0.44–0.64) ──
-  // Raw 0→1, converted to px in the MotionValue chain via useTransform
   const letterPullRaw = useTransform(scrollYProgress, [0.44, 0.64], [0, 1]);
   const letterPullPx = useTransform(letterPullRaw, [0, 1], [0, -220], {
     ease: (t) => {
-      // easeOutBack inline
       const c1 = 1.70158, c3 = c1 + 1;
       return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
     },
   });
 
-  // ── Settle Y: after pull, letter floats down to center (0.64–0.82) ──
-  // Multiplier goes 1→0, so composedY = pullPx * multiplier → 0
   const settleMult = useTransform(scrollYProgress, [0.64, 0.82], [1, 0]);
   const settleMultSp = useSpring(settleMult, { stiffness: 40, damping: 18 });
 
-  // ── Envelope exit (0.60–0.70) ──
   const envExit = useTransform(scrollYProgress, [0.60, 0.70], [1, 0]);
   const envExitScale = useTransform(scrollYProgress, [0.60, 0.70], [1, 0.88]);
 
-  // ── Letter fill: numeric scale drives expansion (0.78–0.90) ──
-  // We scale the letter card up rather than animating width/height strings
   const letterFillSc = useTransform(scrollYProgress, [0.78, 0.90], [1, 14]);
   const letterFillScSp = useSpring(letterFillSc, { stiffness: 50, damping: 20 });
   const letterFillR = useTransform(scrollYProgress, [0.78, 0.87], [8, 0]);
   const letterFillOp = useTransform(scrollYProgress, [0.85, 0.93], [1, 0]);
 
-  // ── Paper physics during pull ──
   const paperWiggle = useTransform(scrollYProgress, [0.50, 0.68], [-2.5, 1]);
   const paperBendX = useTransform(scrollYProgress, [0.50, 0.68], [6, 0]);
   const creaseOp = useTransform(scrollYProgress, [0.50, 0.76], [0.5, 0]);
 
-  // ── Hero text: staggered fade-up (0.90–0.98) ──
   const heroOpacity = useTransform(scrollYProgress, [0.90, 0.97], [0, 1]);
   const heroScale = useTransform(scrollYProgress, [0.90, 0.97], [0.96, 1.0]);
   const subtitleOp = useTransform(scrollYProgress, [0.90, 0.94], [0, 1]);
@@ -544,19 +517,17 @@ const HeroSection = () => {
   const btnsOp = useTransform(scrollYProgress, [0.94, 0.98], [0, 1]);
   const btnsY = useTransform(scrollYProgress, [0.94, 0.98], [12, 0]);
 
-  // ── Avatar (0.96–1.00) ──
   const avatarOp = useTransform(scrollYProgress, [0.96, 1.00], [0, 1]);
   const avatarX = useTransform(scrollYProgress, [0.96, 1.00], [60, 0]);
   const avatarScale = useTransform(scrollYProgress, [0.96, 1.00], [0.85, 1]);
   const avatarXSp = useSpring(avatarX, { stiffness: 68, damping: 15 });
   const avatarScSp = useSpring(avatarScale, { stiffness: 68, damping: 15 });
 
-  // ── Minimal state — only for side-effects, NOT for driving styles ──
-  const [flapVal, setFlapVal] = useState(0);   // z-index toggle only
-  const [envExitVal, setEnvExitVal] = useState(1);   // showEnvelope gate
-  const [letterOpVal, setLetterOpVal] = useState(0);   // showLetter gate
-  const [heroOpVal, setHeroOpVal] = useState(0);   // showHero gate
-  const [avatarOpVal, setAvatarOpVal] = useState(0);   // avatar bob gate
+  const [flapVal, setFlapVal] = useState(0);
+  const [envExitVal, setEnvExitVal] = useState(1);
+  const [letterOpVal, setLetterOpVal] = useState(0);
+  const [heroOpVal, setHeroOpVal] = useState(0);
+  const [avatarOpVal, setAvatarOpVal] = useState(0);
   const [particleActive, setParticles] = useState(false);
   const [showController, setController] = useState(false);
   const [showArrow, setShowArrow] = useState(false);
@@ -607,14 +578,11 @@ const HeroSection = () => {
     return () => { unsubs.forEach(u => u()); bobRef.current?.stop(); };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Derived show flags
   const showEnvelope = envExitVal > 0.01;
   const showLetter = letterOpVal > 0.01;
   const showHero = heroOpVal > 0.01;
   const showAvatar = avatarOpVal > 0.01;
 
-  // Composed letter Y — MotionValue multiplication: pullPx * settleMult spring
-  // As settleMult spring goes 1→0, the letter eases from -220px back to 0
   const composedLetterY = useTransform(
     [letterPullPx, settleMultSp] as const,
     ([pull, mult]: [number, number]) => pull * mult
@@ -622,22 +590,21 @@ const HeroSection = () => {
 
   return (
     <div ref={scrollRef} style={{ height: "700vh", position: "relative" }}>
-
-      {/* Sticky viewport */}
       <div style={{
         position: "sticky", top: 0, height: "100vh",
         overflow: "hidden",
         display: "flex", alignItems: "center", justifyContent: "center",
       }}>
-        {/* Soft radial bg */}
+        {/* Soft radial bg — warm rosy tint instead of green */}
         <div style={{
           position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none",
-          background: "radial-gradient(ellipse 75% 65% at 50% 52%, rgba(168,201,182,0.25) 0%, transparent 78%)",
-        }} />
+          background: `
+radial-gradient(circle at 70% 50%, rgba(16,86,102,0.12), transparent 60%),
+radial-gradient(circle at 40% 60%, rgba(211,150,140,0.15), transparent 70%)
+`        }} />
 
         <BackgroundDoodles visible={true} />
 
-        {/* ── ENVELOPE (stages 1–5) — fades out once letter is free ── */}
         {showEnvelope && (
           <motion.div
             initial={{ y: -220, opacity: 0, scale: 0.8 }}
@@ -664,7 +631,6 @@ const HeroSection = () => {
               <DoodleParticleBurst active={particleActive} />
               <DoodleEnvelopeBody />
 
-              {/* Flap */}
               <motion.div style={{
                 position: "absolute", top: 0, left: 0,
                 width: "100%", height: "62%",
@@ -677,37 +643,25 @@ const HeroSection = () => {
                 <DoodleFlapSVG />
               </motion.div>
 
-              {/* Shadow */}
               <div style={{
                 position: "absolute", bottom: "-18px",
                 left: "6%", right: "6%", height: "18px",
-                background: "radial-gradient(ellipse 80% 100% at 50% 0%, rgba(31,61,50,0.14), transparent)",
+                background: "radial-gradient(ellipse 80% 100% at 50% 0%, rgba(10,51,35,0.12), transparent)",
                 zIndex: -1,
               }} />
             </motion.div>
           </motion.div>
         )}
 
-        {/*
-          ── LETTER CARD ─────────────────────────────────────────────────────
-          Exists independently of the envelope so it can travel anywhere.
-
-          Stage A (0.44–0.64): pulls up out of envelope (letterYPx goes to -220px)
-          Stage B (0.64–0.78): settles down to viewport center (composedLetterY → 0)
-          Stage C (0.78–0.88): width + height expand to fill full viewport
-          Stage D (0.85–0.92): fades out as hero content appears on top
-        */}
         {showLetter && (
           <motion.div
             style={{
               position: "absolute",
-              // Fixed card size — scale drives the fill expansion, not width/height strings
               width: "min(760px, 88vw)",
               height: "clamp(220px, 32vh, 320px)",
               y: composedLetterY,
               rotate: paperWiggle,
               rotateX: paperBendX,
-              // Scale: 1 during pull/settle, then springs up to 14× to fill screen
               scale: letterFillScSp,
               borderRadius: letterFillR,
               opacity: letterFillOp,
@@ -715,15 +669,14 @@ const HeroSection = () => {
               transformOrigin: "center center",
               zIndex: 18,
               overflow: "hidden",
-              background: "#F5FAF7",
-              border: "2.5px solid #1F3D32",
+              background: "#F7F4D5", // ← Beige
+              border: "2.5px solid #0A3323", // ← Dark green
             }}
           >
             <DoodleLetterPreview creaseOpacity={0} />
           </motion.div>
         )}
 
-        {/* ── HERO CARD (stage D) ── */}
         {showHero && (
           <motion.div style={{
             opacity: heroOpacity,
@@ -739,10 +692,7 @@ const HeroSection = () => {
               gap: "clamp(2rem, 5vw, 6rem)",
               alignItems: "center",
             }}>
-
-              {/* Left: text */}
               <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
-
                 <motion.p
                   style={{ opacity: subtitleOp, y: subtitleY }}
                   className="text-sm font-medium tracking-widest uppercase text-muted-foreground"
@@ -758,8 +708,9 @@ const HeroSection = () => {
                 </motion.h1>
 
                 <motion.div style={{ opacity: descOp }}>
+                  {/* Underline: Midnight green */}
                   <svg viewBox="0 0 220 10" style={{ width: "220px", height: "10px", display: "block" }}>
-                    <path d="M2,6 Q55,2 110,6 Q165,9 218,5" stroke="#2F6F55" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+                    <path d="M2,6 Q55,2 110,6 Q165,9 218,5" stroke="#105666" strokeWidth="2.8" fill="none" strokeLinecap="round" />
                   </svg>
                 </motion.div>
 
@@ -811,7 +762,6 @@ const HeroSection = () => {
                 </motion.div>
               </div>
 
-              {/* Right: Avatar */}
               {showAvatar && (
                 <motion.div
                   style={{
@@ -839,7 +789,7 @@ const HeroSection = () => {
                       <div style={{
                         width: "100%", height: "100%",
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        color: "#2F6F55", fontSize: "13px", opacity: 0.4,
+                        color: "#105666", fontSize: "13px", opacity: 0.4,
                       }}>
                         Loading 3D…
                       </div>
@@ -849,7 +799,6 @@ const HeroSection = () => {
                   </div>
                 </motion.div>
               )}
-
             </div>
           </motion.div>
         )}

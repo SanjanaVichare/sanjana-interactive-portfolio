@@ -24,7 +24,7 @@ const HeroWrapper = ({ children }: { children: React.ReactNode }) => (
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background space-y-5 ">
+    <div className="min-h-screen space-y-5 bg-gradient-to-b from-[#E2E8D0] via-[#D9E2C4] to-[#C9D6B0]">
       <HeroWrapper>
         <HeroSection />
       </HeroWrapper>
