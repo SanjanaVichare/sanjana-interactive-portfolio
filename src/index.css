@@ -1,0 +1,190 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=DM+Serif+Display&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 145 25% 88%;
+    --foreground: 150 35% 12%;
+
+    --card: 145 22% 84%;
+    --card-foreground: 150 35% 12%;
+
+    --popover: 145 25% 86%;
+    --popover-foreground: 150 35% 12%;
+
+    --primary: 150 50% 28%;
+    --primary-foreground: 145 30% 95%;
+
+    --secondary: 145 30% 78%;
+    --secondary-foreground: 150 45% 18%;
+
+    --muted: 145 18% 82%;
+    --muted-foreground: 150 15% 40%;
+
+    --accent: 145 35% 75%;
+    --accent-foreground: 150 40% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 145 30% 95%;
+
+    --border: 145 18% 78%;
+    --input: 145 18% 78%;
+    --ring: 150 50% 28%;
+
+    --radius: 1rem;
+
+    --sidebar-background: 145 22% 84%;
+    --sidebar-foreground: 150 35% 12%;
+    --sidebar-primary: 150 50% 28%;
+    --sidebar-primary-foreground: 145 30% 95%;
+    --sidebar-accent: 145 30% 78%;
+    --sidebar-accent-foreground: 150 45% 18%;
+    --sidebar-border: 145 18% 78%;
+    --sidebar-ring: 150 50% 28%;
+
+    /* Custom tokens */
+    --sage: 150 25% 40%;
+    --sage-light: 145 30% 78%;
+    --coral: 150 40% 35%;
+    --coral-light: 145 30% 72%;
+    --stone: 150 12% 50%;
+    --cream: 145 25% 88%;
+    --cream-dark: 145 22% 82%;
+
+    --font-display: 'DM Serif Display', serif;
+    --font-body: 'DM Sans', sans-serif;
+
+    --shadow-soft: 0 4px 20px -4px hsl(30 20% 50% / 0.15);
+    --shadow-card: 0 8px 30px -8px hsl(30 20% 50% / 0.12);
+    --shadow-elevated: 0 16px 50px -12px hsl(30 20% 50% / 0.2);
+  }
+
+  .dark {
+    --background: 150 20% 8%;
+    --foreground: 40 30% 92%;
+    --card: 150 20% 12%;
+    --card-foreground: 40 30% 92%;
+    --popover: 150 20% 8%;
+    --popover-foreground: 40 30% 92%;
+    --primary: 150 45% 30%;
+    --primary-foreground: 40 33% 98%;
+    --secondary: 150 30% 18%;
+    --secondary-foreground: 138 50% 80%;
+    --muted: 150 15% 18%;
+    --muted-foreground: 40 15% 60%;
+    --accent: 340 30% 20%;
+    --accent-foreground: 340 50% 80%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 150 15% 20%;
+    --input: 150 15% 20%;
+    --ring: 150 45% 30%;
+    --sidebar-background: 150 20% 10%;
+    --sidebar-foreground: 40 30% 92%;
+    --sidebar-primary: 150 45% 30%;
+    --sidebar-primary-foreground: 40 33% 98%;
+    --sidebar-accent: 150 30% 18%;
+    --sidebar-accent-foreground: 138 50% 80%;
+    --sidebar-border: 150 15% 20%;
+    --sidebar-ring: 150 45% 30%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer components {
+  .section-container {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .glass-card {
+    @apply rounded-2xl border border-border/50;
+    background: hsl(var(--card) / 0.7);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-card);
+  }
+
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--coral), 1));
+  }
+
+  .blob-shape {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+
+  .skill-chip {
+    @apply px-3 py-1.5 rounded-full text-sm font-medium bg-secondary text-secondary-foreground border border-border/30 transition-all duration-300;
+  }
+
+  .skill-chip:hover {
+    @apply bg-primary text-primary-foreground scale-105;
+    box-shadow: var(--shadow-soft);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
