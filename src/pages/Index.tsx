@@ -7,8 +7,8 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
 const SectionWrapper = ({ children, id }: { children: React.ReactNode; id?: string }) => (
-  <div id={id} className="section-container py-8">
-    <div className="glass-card p-6 sm:p-5">
+  <div id={id} className="section-container py-3">
+    <div className="glass-card p-5 sm:p-2">
       {children}
     </div>
   </div>
@@ -25,12 +25,11 @@ const HeroWrapper = ({ children }: { children: React.ReactNode }) => (
 const Index = () => {
   return (
     <div
-      className="min-h-screen space-y-5"
+      className="min-h-screen space-y-2"
       style={{
         background: "linear-gradient(to bottom, #F7F4D5 0%, #EDE9C4 30%, #DDD9AE 60%, #C8D4A8 100%)",
       }}
     >
-      {/* global overrides so glass-card picks up the palette */}
       <style>{`
         :root {
           --color-ink:      #0A3323;
@@ -42,13 +41,11 @@ const Index = () => {
           --color-beige-d:  #EDE9C4;
         }
 
-        /* page background override (replaces any Tailwind bg-* on body) */
         body {
           background: linear-gradient(to bottom, #F7F4D5, #EDE9C4 40%, #C8D4A8 100%);
           min-height: 100vh;
         }
 
-        /* glass card — warm beige tint instead of default grey */
         .glass-card {
           background: rgba(247, 244, 213, 0.72) !important;
           backdrop-filter: blur(14px) saturate(1.3) !important;
@@ -60,54 +57,50 @@ const Index = () => {
           border-radius: 16px !important;
         }
 
-        /* Headings / strong text → dark green */
-        h1, h2, h3, h4, h5, h6 {
-          color: #0A3323;
-        }
+        h1, h2, h3, h4, h5, h6 { color: #0A3323; }
+        p, li, span, label { color: #0A3323cc; }
+        a { color: #105666; }
+        a:hover { color: #0A3323; }
+        *:focus-visible { outline: 2px solid #105666; outline-offset: 2px; }
 
-        /* Body text — slightly softened ink */
-        p, li, span, label {
-          color: #0A3323cc;
-        }
-
-        /* Primary accent links / highlights */
-        a {
-          color: #105666;
-        }
-        a:hover {
-          color: #0A3323;
-        }
-
-        /* Focus ring */
-        *:focus-visible {
-          outline: 2px solid #105666;
-          outline-offset: 2px;
-        }
-
-        /* Buttons that use bg-primary or similar utilities */
         .btn-primary,
         [class*="bg-primary"] {
           background-color: #0A3323 !important;
           color: #F7F4D5 !important;
         }
 
-        /* Muted text */
         .text-muted-foreground,
-        [class*="text-muted"] {
-          color: #839958 !important;
-        }
+        [class*="text-muted"] { color: #839958 !important; }
 
-        /* Border color overrides */
         [class*="border-border"],
-        [class*="border-input"] {
-          border-color: rgba(10, 51, 35, 0.18) !important;
-        }
+        [class*="border-input"] { border-color: rgba(10, 51, 35, 0.18) !important; }
 
-        /* Scrollbar styling — subtle moss */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #F7F4D5; }
         ::-webkit-scrollbar-thumb { background: #839958; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #0A3323; }
+
+        /* ── Tighten internal section padding ── */
+        /* AboutSection */
+        section[style*="max-width: 1100px"],
+        div[style*="max-width: 1100px"] {
+          padding-top: 32px !important;
+          padding-bottom: 32px !important;
+        }
+
+        /* ExperienceSection & ContactSection full-height sections */
+        section.w-full.min-h-screen {
+          min-height: unset !important;
+          padding-top: 40px !important;
+          padding-bottom: 40px !important;
+        }
+
+        /* ProjectsSection */
+        div[style*="padding: \"64px 28px 72px\""],
+        div[style*="padding: 64px 28px 72px"] {
+          padding-top: 32px !important;
+          padding-bottom: 40px !important;
+        }
       `}</style>
 
       <HeroWrapper>

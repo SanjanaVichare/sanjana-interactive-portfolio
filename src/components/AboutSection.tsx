@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import {
   Github,
   Linkedin,
@@ -64,6 +64,47 @@ const LINES = [
   "> creating experimental tools",
   "> developing AI systems",
 ];
+
+// ── useMagnet hook ─────────────────────────────────────────────────────────
+function useMagnet(strength = 0.32) {
+  const ref = useRef<HTMLDivElement>(null);
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const x = useSpring(mx, { stiffness: 280, damping: 20 });
+  const y = useSpring(my, { stiffness: 280, damping: 20 });
+
+  const onMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const rect = ref.current?.getBoundingClientRect();
+      if (!rect) return;
+      mx.set((e.clientX - (rect.left + rect.width / 2)) * strength);
+      my.set((e.clientY - (rect.top + rect.height / 2)) * strength);
+    },
+    [mx, my, strength]
+  );
+
+  const onMouseLeave = useCallback(() => {
+    mx.set(0);
+    my.set(0);
+  }, [mx, my]);
+
+  return { ref, x, y, onMouseMove, onMouseLeave };
+}
+
+// ── MagnetWrap ─────────────────────────────────────────────────────────────
+function MagnetWrap({ children }: { children: ReactNode }) {
+  const { ref, x, y, onMouseMove, onMouseLeave } = useMagnet();
+  return (
+    <motion.div
+      ref={ref}
+      style={{ x, y, display: "inline-block" }}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 function useTyping(lines: string[], typeMs = 70, eraseMs = 35, pauseMs = 1400) {
   const [text, setText] = useState("");
@@ -178,68 +219,98 @@ const Popup = ({ title, items }: { title: string; items: string[] }) => (
   </div>
 );
 
+// ── Magnetic Social Button ─────────────────────────────────────────────────
 const SocButton = ({ btn }: { btn: SocBtn }) => {
   const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>();
-  const enter = () => { clearTimeout(timer.current); setOpen(true); };
-  const leave = () => { timer.current = setTimeout(() => setOpen(false), 120); };
+  const { ref, x, y, onMouseMove, onMouseLeave: magnetLeave } = useMagnet(0.35);
+
+  const enter = () => { clearTimeout(timer.current); setOpen(true); setHovered(true); };
+  const leave = () => {
+    timer.current = setTimeout(() => setOpen(false), 120);
+    setHovered(false);
+    magnetLeave();
+  };
+
+  // Icon pop on hover
+  const iconScale = hovered ? 1.18 : 1;
+  const iconRotate = hovered ? 8 : 0;
+
   return (
     <div style={{ position: "relative", display: "inline-block" }}>
-      <motion.a href={btn.url} target="_blank" rel="noopener noreferrer" onHoverStart={enter} onHoverEnd={leave} whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.95 }}
-        style={{ display: "inline-flex", alignItems: "center", gap: "7px", background: open && btn.preview ? C.midnightGreen : C.rosyBrown, color: C.beige, borderRadius: "999px", padding: "9px 17px", fontSize: "13px", fontWeight: 500, textDecoration: "none", transition: "background 0.2s ease", cursor: "pointer" }}
+      <motion.div
+        ref={ref}
+        style={{ x, y, display: "inline-block" }}
+        onMouseMove={onMouseMove}
+        onMouseLeave={leave}
       >
-        {btn.icon}{btn.label}{btn.preview && <ExternalLink size={10} style={{ opacity: 0.45 }} />}
-      </motion.a>
+        <motion.a
+          href={btn.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onHoverStart={enter}
+          onHoverEnd={leave}
+          whileTap={{ scale: 0.94 }}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "7px",
+            background: hovered && btn.preview ? C.midnightGreen : C.rosyBrown,
+            color: C.beige,
+            borderRadius: "999px",
+            padding: "9px 17px",
+            fontSize: "13px",
+            fontWeight: 600,
+            textDecoration: "none",
+            cursor: "pointer",
+            boxShadow: hovered
+              ? "0 10px 28px rgba(10,51,35,0.22)"
+              : "0 3px 10px rgba(10,51,35,0.12)",
+            transition: "background 0.2s ease, box-shadow 0.25s ease",
+          }}
+        >
+          {/* Animated icon */}
+          <motion.span
+            animate={{ scale: iconScale, rotate: iconRotate }}
+            transition={{ type: "spring", stiffness: 380, damping: 18 }}
+            style={{ display: "flex" }}
+          >
+            {btn.icon}
+          </motion.span>
+
+          {btn.label}
+
+          {btn.preview && (
+            <ExternalLink size={10} style={{ opacity: 0.45 }} />
+          )}
+        </motion.a>
+      </motion.div>
+
+      {/* Preview popup — rendered outside the magnet div so it stays put */}
       <AnimatePresence>
         {open && btn.preview && (
-          <motion.div initial={{ opacity: 0, y: 6, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 6, scale: 0.95 }} transition={{ duration: 0.15 }}
-            onMouseEnter={enter} onMouseLeave={leave}
-            style={{ position: "absolute", bottom: "calc(100% + 8px)", left: "50%", transform: "translateX(-50%)", zIndex: 300, pointerEvents: "auto" }}
+          <motion.div
+            initial={{ opacity: 0, y: 6, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 6, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            onMouseEnter={enter}
+            onMouseLeave={leave}
+            style={{
+              position: "absolute",
+              bottom: "calc(100% + 8px)",
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 300,
+              pointerEvents: "auto",
+            }}
           >
             {btn.preview}
           </motion.div>
         )}
       </AnimatePresence>
     </div>
-  );
-};
-
-// ── Peeking Girl (scroll-driven) ───────────────────────────────────────────
-const PeekingGirl = () => {
-  const ref = useRef(null);
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 80%", "start 40%"], // triggers nicely
-  });
-
-  const y = useTransform(scrollYProgress, [0, 1], [60, 0]);
-  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
-
-  return (
-    <motion.img
-      ref={ref}
-      src={girlPeek}
-      alt="Peeking Sanjana"
-      style={{
-        position: "absolute",
-        top: "-70px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        width: "140px",
-        y,
-        opacity,
-        zIndex: 10,
-        pointerEvents: "none",
-        filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.15))",
-      }}
-      transition={{
-        type: "spring",
-        stiffness: 120,
-        damping: 14,
-      }}
-      animate={{ y: [0, -4, 0] }} // idle float
-    />
   );
 };
 
@@ -277,11 +348,9 @@ export default function AboutSection() {
             background: C.beige,
             border: "1px solid rgba(10,51,35,0.15)",
             position: "relative",
-            overflow: "visible", // 🔥 IMPORTANT (cuts body)
+            overflow: "visible",
           }}
         >
-
-          {/* 👇 GIRL (comes from behind) */}
           <motion.img
             src={girlPeek}
             initial={{ y: 30, opacity: 0 }}
@@ -289,43 +358,30 @@ export default function AboutSection() {
             viewport={{ once: true, margin: "-50px" }}
             animate={{ y: [0, -6, 0] }}
             transition={{
-              y: {
-                duration: 2.5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              },
+              y: { duration: 2.5, repeat: Infinity, ease: "easeInOut" },
               opacity: { duration: 0.4 }
             }}
             style={{
               position: "absolute",
-              top: "-70px", // 🔥 THIS is the key
+              top: "-70px",
               left: "50%",
               transform: "translateX(-50%)",
-              width: "160px", // slightly bigger = better presence
-              zIndex: 20, // ABOVE everything
+              width: "160px",
+              zIndex: 20,
               pointerEvents: "none",
               filter: "drop-shadow(0 12px 24px rgba(0,0,0,0.18))"
             }}
           />
 
-          {/* 👇 CONTENT (above girl) */}
           <div style={{ position: "relative", zIndex: 2 }}>
-
             <motion.div
               animate={{ y: [-5, 5, -5] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               style={{
-                width: "50px",
-                height: "50px",
-                borderRadius: "50%",
-                background: C.midnightGreen,
-                color: C.beige,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "16px",
-                fontWeight: 700,
-                marginBottom: "18px",
+                width: "50px", height: "50px", borderRadius: "50%",
+                background: C.midnightGreen, color: C.beige,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: "16px", fontWeight: 700, marginBottom: "18px",
               }}
             >
               SV
@@ -335,27 +391,13 @@ export default function AboutSection() {
               Sanjana Vichare
             </div>
 
-            <div style={{
-              fontSize: "9.5px",
-              fontWeight: 600,
-              color: C.mossGreen,
-              textTransform: "uppercase",
-              letterSpacing: "1px",
-              marginBottom: "13px"
-            }}>
+            <div style={{ fontSize: "9.5px", fontWeight: 600, color: C.mossGreen, textTransform: "uppercase", letterSpacing: "1px", marginBottom: "13px" }}>
               Creative Software Developer
             </div>
 
-            <p style={{
-              fontSize: "13.5px",
-              lineHeight: 1.8,
-              color: "#2d4a3a",
-              margin: 0,
-              paddingBottom: "80px"
-            }}>
+            <p style={{ fontSize: "13.5px", lineHeight: 1.8, color: "#2d4a3a", margin: 0, paddingBottom: "80px" }}>
               Creative developer who builds apps, games, and experimental systems combining technology with creativity.
             </p>
-
           </div>
         </motion.div>
 
@@ -373,13 +415,18 @@ export default function AboutSection() {
           <Label text="What I Build" color="rgba(10,51,35,0.55)" />
           <div style={{ fontFamily: "'Courier New', monospace", fontSize: "clamp(15px, 1.8vw, 19px)", fontWeight: 600, color: C.darkGreen, minHeight: "80px", lineHeight: 1.4, display: "flex", alignItems: "flex-start", flexWrap: "wrap" }}>
             <span>{typed}</span>
-            <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ duration: 0.75, repeat: Infinity }}
+            <motion.span
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 0.75, repeat: Infinity }}
               style={{ display: "inline-block", width: "2px", height: "1em", background: C.darkGreen, marginLeft: "2px", borderRadius: "1px", flexShrink: 0 }}
             />
           </div>
           <div style={{ display: "flex", gap: "6px", marginTop: "18px" }}>
             {LINES.map((_, i) => (
-              <motion.div key={i} animate={{ width: i === lineIdx ? "22px" : "7px", opacity: i === lineIdx ? 1 : 0.3 }} transition={{ duration: 0.3 }}
+              <motion.div
+                key={i}
+                animate={{ width: i === lineIdx ? "22px" : "7px", opacity: i === lineIdx ? 1 : 0.3 }}
+                transition={{ duration: 0.3 }}
                 style={{ height: "3px", borderRadius: "2px", background: C.darkGreen }}
               />
             ))}
