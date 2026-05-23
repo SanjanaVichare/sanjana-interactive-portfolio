@@ -135,7 +135,7 @@ const FeaturedCard = ({ p }: { p: Project }) => (
           <span style={{ fontSize: 10, color: C.moss, fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase" }}>Featured</span>
         </div>
         <h3 style={{
-          fontFamily: "'Playfair Display', Georgia, serif",
+          fontFamily: "'Cormorant Garamond', Georgia, serif",
           fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 700,
           color: C.dark, lineHeight: 1.15, marginBottom: 16, letterSpacing: "-0.3px",
         }}>{p.title}</h3>
@@ -271,7 +271,7 @@ const ProjectsSection = () => {
         >
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
             <h2 style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
               fontSize: "clamp(36px, 5vw, 54px)",
               color: C.dark, lineHeight: 1.05, margin: 0,
             }}>

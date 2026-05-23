@@ -168,7 +168,7 @@ const ContactSection = () => {
           className="text-4xl sm:text-5xl font-bold leading-tight"
           style={{
             color: C.primaryText,
-            fontFamily: "'Playfair Display', Georgia, serif",
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
           }}
         >
           Let's{" "}

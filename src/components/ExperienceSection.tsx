@@ -124,7 +124,7 @@ function Card({
             <div className="pt-0.5">
               <h3
                 className="font-bold text-xl leading-snug"
-                style={{ color: C.primaryText, fontFamily: "'Playfair Display', Georgia, serif" }}
+                style={{ color: C.primaryText, fontFamily: "'Cormorant Garamond', Georgia, serif" }}
               >
                 {title}
               </h3>
@@ -149,7 +149,7 @@ function Card({
               <div className="pt-0.5">
                 <h3
                   className="font-bold text-xl leading-snug"
-                  style={{ color: C.primaryText, fontFamily: "'Playfair Display', Georgia, serif" }}
+                  style={{ color: C.primaryText, fontFamily: "'Cormorant Garamond', Georgia, serif" }}
                 >
                   Diploma in Computer Engineering
                 </h3>
@@ -238,7 +238,7 @@ const ExperienceSection = () => {
           className="text-4xl sm:text-5xl font-bold"
           style={{
             color: C.primaryText,
-            fontFamily: "'Playfair Display', Georgia, serif",
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
           }}
         >
           Experience &amp; Education

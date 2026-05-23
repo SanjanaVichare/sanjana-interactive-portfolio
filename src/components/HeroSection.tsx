@@ -234,7 +234,7 @@ function NowPlaying() {
 
       {/* track */}
       <div style={{ marginBottom: "14px" }}>
-        <div style={{ fontSize: "1rem", fontWeight: 700, color: C.primaryText, fontFamily: "'Playfair Display', Georgia, serif", lineHeight: 1.2 }}>
+        <div style={{ fontSize: "1rem", fontWeight: 700, color: C.primaryText, fontFamily: "'Cormorant Garamond', Georgia, serif", lineHeight: 1.2 }}>
           {SONG.title}
         </div>
         <div style={{ fontSize: "0.8rem", color: C.secondaryText, fontFamily: "'DM Sans', sans-serif", marginTop: "3px" }}>
@@ -325,7 +325,7 @@ const HeroSection = () => {
 
           <motion.h1 {...fadeUp(0.28)} style={{
             fontSize: "clamp(3rem, 6vw, 5rem)", fontWeight: 700, lineHeight: 1.08,
-            color: C.primaryText, fontFamily: "'Playfair Display', Georgia, serif", margin: 0,
+            color: C.primaryText, fontFamily: "'Cormorant Garamond', Georgia, serif", margin: 0,
           }}>
             Sanjana<br /><em>Vichare</em>
           </motion.h1>
