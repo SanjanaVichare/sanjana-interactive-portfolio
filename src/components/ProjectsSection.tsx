@@ -275,7 +275,7 @@ const ProjectsSection = () => {
               fontSize: "clamp(36px, 5vw, 54px)",
               color: C.dark, lineHeight: 1.05, margin: 0,
             }}>
-              Selected <em style={{ fontStyle: "italic", color: C.accent }}>Works</em>
+              Selected Works
             </h2>
           </div>
         </motion.div>

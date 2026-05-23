@@ -298,7 +298,10 @@ const ExperienceSection = () => {
       </div>
 
       {/* Google Fonts */}
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');`}
+
+
+      </style>
     </section>
   );
 };
