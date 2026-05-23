@@ -1,402 +1,296 @@
 import { motion } from "framer-motion";
 
 import projectAiSign from "@/assets/project-ai-sign.png";
-import projectSvEnterprises from "@/assets/project-sv-enterprises.jpg";
-import projectAlienEscape from "@/assets/project-alien-escape.png";
+import projectSvEnterprises from "@/assets/imageopy.png";
 import projectHashdrop from "@/assets/project-hashdrop.jpg";
 import projectFinance from "@/assets/project-finance.jpg";
 import projectDressmeup from "@/assets/project-dressmeup.png";
+import image from "@/assets/image.png";
 
-// ── Palette ──────────────────────────────────────────────────────────────────
 const C = {
   dark: "#0A3323",
   moss: "#839958",
   beige: "#F7F4D5",
-  rosy: "#D3968C",
-  mid: "#105666",
-  mauve: "#8D5F67",
+  rose: "#D3968C",
+  accent: "#105666",
+  forest: "#063C2B",
+  border: "rgba(10,51,35,0.13)",
 } as const;
 
 const EASE: [number, number, number, number] = [0.2, 0, 0, 1];
 
-// ── Types ────────────────────────────────────────────────────────────────────
 interface Project {
   title: string;
   desc: string;
   tech: string[];
-  span: string;          // Tailwind / inline grid-column span label
-  colSpan: number;       // numeric span for inline style
   accent: string;
-  tagBg: string;
-  tagColor: string;
-  chipBg: string;
-  chipColor: string;
   image: string;
+  url: string;
+  featured?: boolean;
+  tag: string;
 }
 
-// ── Data ─────────────────────────────────────────────────────────────────────
 const projects: Project[] = [
   {
     title: "AI Indian Sign Language",
-    desc: "Recognizes Indian sign language gestures and converts them into text or speech for real-time accessibility.",
+    desc: "Real-time sign language recognition system that converts Indian sign language gestures into text and speech — built for accessibility using computer vision and NLP.",
     tech: ["Python", "Computer Vision", "NLP"],
-    span: "span-7",
-    colSpan: 7,
-    accent: C.mid,
-    tagBg: "rgba(16,86,102,0.10)",
-    tagColor: C.mid,
-    chipBg: C.mid,
-    chipColor: C.beige,
+    accent: C.accent,
     image: projectAiSign,
+    url: "https://github.com/SanjanaVichare",
+    featured: true,
+    tag: "AI · Accessibility",
   },
   {
     title: "SV Enterprises App",
-    desc: "Mobile app for employees and vehicles with admin dashboard, Excel uploads, and location tracking.",
+    desc: "Flutter mobile app for employee and vehicle management with admin dashboard, Excel uploads, and live location tracking.",
     tech: ["Flutter", "SQLite", "Flask API"],
-    span: "span-5",
-    colSpan: 5,
     accent: C.dark,
-    tagBg: "rgba(10,51,35,0.10)",
-    tagColor: C.dark,
-    chipBg: C.dark,
-    chipColor: C.beige,
     image: projectSvEnterprises,
+    url: "https://www.svfs.info/",
+    tag: "Mobile App",
   },
   {
     title: "HashDrop",
-    desc: "A secure document sharing platform with two-step verification and controlled file modification.",
+    desc: "Secure document sharing platform with two-step verification and controlled file modification.",
     tech: ["Flask", "MongoDB", "JavaScript"],
-    span: "span-4",
-    colSpan: 4,
-    accent: C.mauve,
-    tagBg: "rgba(141,95,103,0.12)",
-    tagColor: "#6b3a42",
-    chipBg: C.mauve,
-    chipColor: C.beige,
+    accent: "#8D5F67",
     image: projectHashdrop,
+    url: "https://github.com/SanjanaVichare",
+    tag: "Web · Security",
   },
   {
     title: "Finance Manager",
     desc: "Web app for managing employee salary records and generating ID cards for a finance company.",
     tech: ["Flask", "HTML/CSS", "JavaScript"],
-    span: "span-8",
-    colSpan: 8,
     accent: C.moss,
-    tagBg: "rgba(131,153,88,0.12)",
-    tagColor: "#4a5e20",
-    chipBg: C.moss,
-    chipColor: C.beige,
     image: projectFinance,
-  },
-  {
-    title: "Dataective",
-    desc: "An intelligent crime investigation game where detectives use data, SQL, and visual clues to identify suspects.",
-    tech: ["React", "TypeScript", "SQLite"],
-    span: "span-6",
-    colSpan: 6,
-    accent: C.mid,
-    tagBg: "rgba(16,86,102,0.10)",
-    tagColor: C.mid,
-    chipBg: C.mid,
-    chipColor: C.beige,
-    image: projectAlienEscape,
+    url: "https://www.svfs.info/",
+    tag: "Web · Finance",
   },
   {
     title: "Facility Management",
-    desc: "A cleaning facility management website to streamline operations and improve service efficiency.",
+    desc: "Cleaning facility management website to streamline operations and improve service efficiency.",
     tech: ["Flask", "SQL", "TypeScript"],
-    span: "span-6",
-    colSpan: 6,
-    accent: C.rosy,
-    tagBg: "rgba(211,150,140,0.15)",
-    tagColor: "#7a3e36",
-    chipBg: C.rosy,
-    chipColor: "#3a1a16",
+    accent: C.rose,
     image: projectDressmeup,
+    url: "https://www.hometaskfm.in",
+    tag: "Web · Operations",
+  },
+  {
+    title: "ACE Sports Organization",
+    desc: "Official website for a sports organization — event listings, team info, and announcements built for a real client.",
+    tech: ["TypeScript"],
+    accent: C.moss,
+    image: image,
+    url: "https://www.acesports.org.in/",
+    tag: "Web · Sports",
+  },
+  {
+    title: "ACFC Football Club",
+    desc: "Dedicated website for the football section — fixtures, player profiles, and club news for a real football club.",
+    tech: ["TypeScript"],
+    accent: C.dark,
+    image: image, // swap with actual image when ready
+    url: "https://www.acexifc.com/",
+    tag: "Web · Football",
   },
 ];
 
-// ── Image heights by colSpan ──────────────────────────────────────────────────
-function imgHeight(colSpan: number): number {
-  if (colSpan >= 8) return 224;
-  if (colSpan >= 6) return 210;
-  if (colSpan >= 5) return 204;
-  return 196;
-}
-
-// ── Arrow SVG ────────────────────────────────────────────────────────────────
 const ArrowIcon = ({ color = C.dark }: { color?: string }) => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M7 17L17 7M17 7H7M17 7V17"
-      stroke={color}
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+    <path d="M7 17L17 7M17 7H7M17 7V17" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
-// ── ProjectCard ───────────────────────────────────────────────────────────────
-interface CardProps {
-  project: Project;
-  index: number;
-}
+// ── Featured card ─────────────────────────────────────────────────────────────
+const FeaturedCard = ({ p }: { p: Project }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 36 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-40px" }}
+    transition={{ duration: 0.6, ease: EASE }}
+    onClick={() => window.open(p.url, "_blank")}
+    style={{
+      borderRadius: 24,
+      overflow: "hidden",
+      background: C.beige,
+      border: `1px solid ${C.border}`,
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      cursor: "pointer",
+      marginBottom: 20,
+      minHeight: 360,
+    }}
+  >
+    {/* Left: text */}
+    <div style={{ padding: "44px 48px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+      <div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
+          <span style={{
+            fontSize: 10, fontWeight: 700, letterSpacing: "1.6px", textTransform: "uppercase",
+            padding: "4px 12px", borderRadius: 999,
+            background: `${p.accent}18`, color: p.accent,
+          }}>{p.tag}</span>
+          <span style={{ fontSize: 10, color: C.moss, fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase" }}>Featured</span>
+        </div>
+        <h3 style={{
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 700,
+          color: C.dark, lineHeight: 1.15, marginBottom: 16, letterSpacing: "-0.3px",
+        }}>{p.title}</h3>
+        <p style={{ fontSize: 14, color: "#3d5c48", lineHeight: 1.85, maxWidth: 380 }}>{p.desc}</p>
+      </div>
 
-const ProjectCard = ({ project: p, index }: CardProps) => {
-  const num = String(index + 1).padStart(2, "0");
+      <div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 28 }}>
+          {p.tech.map(t => (
+            <span key={t} style={{
+              fontSize: 11, fontWeight: 600, padding: "4px 12px", borderRadius: 999,
+              background: p.accent, color: C.beige,
+            }}>{t}</span>
+          ))}
+        </div>
+        <motion.div
+          whileHover={{ gap: "12px" }}
+          style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, color: p.accent, fontFamily: "'DM Sans', sans-serif" }}
+        >
+          View project <ArrowIcon color={p.accent} />
+        </motion.div>
+      </div>
+    </div>
+
+    {/* Right: image */}
+    <div style={{ position: "relative", overflow: "hidden" }}>
+      <motion.img
+        src={p.image} alt={p.title}
+        whileHover={{ scale: 1.05 }}
+        transition={{ duration: 0.55, ease: EASE }}
+        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+      />
+      <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${p.accent}22, transparent 60%)` }} />
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 4, background: p.accent }} />
+    </div>
+  </motion.div>
+);
+
+// ── Small card ────────────────────────────────────────────────────────────────
+const SmallCard = ({ p, index }: { p: Project; index: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 32 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-40px" }}
+    transition={{ duration: 0.5, delay: index * 0.08, ease: EASE }}
+    whileHover={{ y: -6, boxShadow: "0 20px 48px rgba(10,51,35,0.13)" }}
+    onClick={() => window.open(p.url, "_blank")}
+    style={{
+      borderRadius: 20,
+      overflow: "hidden",
+      background: C.beige,
+      border: `1px solid ${C.border}`,
+      display: "flex",
+      flexDirection: "column",
+      cursor: "pointer",
+    }}
+  >
+    {/* Image */}
+    <div style={{ position: "relative", overflow: "hidden", height: 200, flexShrink: 0 }}>
+      <motion.img
+        src={p.image} alt={p.title}
+        whileHover={{ scale: 1.06 }}
+        transition={{ duration: 0.5, ease: EASE }}
+        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+      />
+      <motion.div
+        initial={{ opacity: 0 }} whileHover={{ opacity: 1 }}
+        transition={{ duration: 0.25 }}
+        style={{
+          position: "absolute", inset: 0,
+          background: `${p.accent}CC`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}
+      >
+        <div style={{
+          width: 44, height: 44, borderRadius: "50%",
+          background: C.beige, display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <ArrowIcon color={p.accent} />
+        </div>
+      </motion.div>
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: p.accent }} />
+    </div>
+
+    {/* Body */}
+    <div style={{ padding: "18px 20px 22px", flex: 1, display: "flex", flexDirection: "column" }}>
+      <span style={{
+        fontSize: 9.5, fontWeight: 700, letterSpacing: "1.4px", textTransform: "uppercase",
+        padding: "3px 10px", borderRadius: 999, marginBottom: 10, alignSelf: "flex-start",
+        background: `${p.accent}18`, color: p.accent,
+      }}>{p.tag}</span>
+
+      <h3 style={{
+        fontSize: 15, fontWeight: 700, color: C.dark,
+        marginBottom: 8, letterSpacing: "-0.2px", lineHeight: 1.3,
+        fontFamily: "'DM Sans', sans-serif",
+      }}>{p.title}</h3>
+
+      <p style={{
+        fontSize: 12.5, color: "#3d5c48", lineHeight: 1.75, flex: 1,
+        overflow: "hidden", display: "-webkit-box",
+        WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+      }}>{p.desc}</p>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 14 }}>
+        {p.tech.map(t => (
+          <span key={t} style={{
+            fontSize: 10, fontWeight: 600, padding: "3px 9px",
+            borderRadius: 999, background: p.accent, color: C.beige,
+          }}>{t}</span>
+        ))}
+      </div>
+    </div>
+  </motion.div>
+);
+
+// ── Section ───────────────────────────────────────────────────────────────────
+const ProjectsSection = () => {
+  const featured = projects.find(p => p.featured)!;
+  const rest = projects.filter(p => !p.featured);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 44 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.55, delay: index * 0.07, ease: EASE }}
-      whileHover={{ y: -7, boxShadow: "0 22px 52px rgba(10,51,35,0.15)" }}
-      style={{
-        gridColumn: `span ${p.colSpan}`,
-        borderRadius: 20,
-        overflow: "hidden",
-        background: C.beige,
-        border: "1px solid rgba(10,51,35,0.10)",
-        display: "flex",
-        flexDirection: "column",
-        cursor: "pointer",
-        position: "relative",
-      }}
-    >
-      {/* ── Image ── */}
-      <div style={{ position: "relative", overflow: "hidden", flexShrink: 0, height: imgHeight(p.colSpan) }}>
-        <motion.img
-          src={p.image}
-          alt={p.title}
-          loading="lazy"
-          whileHover={{ scale: 1.06 }}
-          transition={{ duration: 0.55, ease: EASE }}
-          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-        />
+    <div id="projects-section" style={{ background: C.beige, borderTop: `1px solid ${C.border}` }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "72px 28px 80px" }}>
 
-        {/* Hover overlay */}
+        {/* Header */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileHover={{ opacity: 1 }}
-          transition={{ duration: 0.28 }}
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: `${p.accent}CC`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.5, ease: EASE }}
+          style={{ marginBottom: 52 }}
         >
-          <div
-            style={{
-              width: 46,
-              height: 46,
-              borderRadius: "50%",
-              background: C.beige,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <ArrowIcon color={p.accent} />
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+            <h2 style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: "clamp(36px, 5vw, 54px)",
+              color: C.dark, lineHeight: 1.05, margin: 0,
+            }}>
+              Selected <em style={{ fontStyle: "italic", color: C.accent }}>Works</em>
+            </h2>
           </div>
         </motion.div>
 
-        {/* Accent strip */}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: p.accent }} />
-      </div>
+        {/* Featured */}
+        <FeaturedCard p={featured} />
 
-      {/* ── Body ── */}
-      <div style={{ padding: "18px 20px 20px", flex: 1, display: "flex", flexDirection: "column" }}>
-
-        {/* Ghost number */}
-        <span
-          style={{
-            position: "absolute",
-            right: 16,
-            bottom: 14,
-            fontFamily: "'DM Serif Display', serif",
-            fontSize: 52,
-            lineHeight: 1,
-            color: C.dark,
-            opacity: 0.04,
-            pointerEvents: "none",
-            userSelect: "none",
-          }}
-        >
-          {num}
-        </span>
-
-        {/* Tag */}
-        <div style={{ marginBottom: 9 }}>
-          <span
-            style={{
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: "1.2px",
-              textTransform: "uppercase",
-              padding: "3px 9px",
-              borderRadius: 999,
-              background: p.tagBg,
-              color: p.tagColor,
-            }}
-          >
-            {p.tech[0]}
-          </span>
+        {/* Grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 18 }}>
+          {rest.map((p, i) => <SmallCard key={p.title} p={p} index={i} />)}
         </div>
 
-        {/* Title */}
-        <h3
-          style={{
-            fontSize: 15.5,
-            fontWeight: 600,
-            color: C.dark,
-            marginBottom: 7,
-            letterSpacing: "-0.2px",
-            lineHeight: 1.3,
-          }}
-        >
-          {p.title}
-        </h3>
-
-        {/* Description */}
-        <p
-          style={{
-            fontSize: 12.5,
-            color: "#3d5c48",
-            lineHeight: 1.8,
-            flex: 1,
-            overflow: "hidden",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-          }}
-        >
-          {p.desc}
-        </p>
-
-        {/* Footer: chips + arrow */}
-        <div style={{ marginTop: 15, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-            {p.tech.map((t) => (
-              <span
-                key={t}
-                style={{
-                  fontSize: 10.5,
-                  fontWeight: 600,
-                  padding: "3px 9px",
-                  borderRadius: 999,
-                  background: p.chipBg,
-                  color: p.chipColor,
-                }}
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-
-          <motion.div
-            whileHover={{ background: C.dark, borderColor: C.dark }}
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: "50%",
-              border: "1px solid rgba(10,51,35,0.18)",
-              background: "transparent",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <ArrowIcon />
-          </motion.div>
-        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
-
-// ── Section ───────────────────────────────────────────────────────────────────
-const ProjectsSection = () => (
-  <div style={{ maxWidth: 1100, margin: "0 auto", padding: "64px 28px 72px" }}>
-
-    {/* Header */}
-    <motion.div
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.5, ease: EASE }}
-      style={{
-        display: "flex",
-        alignItems: "flex-end",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: 20,
-        marginBottom: 52,
-      }}
-    >
-      <div>
-        <p
-          style={{
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: "3px",
-            textTransform: "uppercase",
-            color: C.moss,
-            marginBottom: 10,
-          }}
-        >
-          Portfolio
-        </p>
-        <h2
-          style={{
-            fontFamily: "'DM Serif Display', serif",
-            fontSize: "clamp(36px, 5vw, 54px)",
-            color: C.dark,
-            lineHeight: 1.05,
-          }}
-        >
-          Selected
-          <br />
-          <em style={{ fontStyle: "italic", color: C.mid }}>Works</em>
-        </h2>
-        <p style={{ fontSize: 13.5, color: "#4a6a58", lineHeight: 1.75, maxWidth: 320, marginTop: 14 }}>
-          A collection spanning AI, mobile apps, games, and web platforms.
-        </p>
-      </div>
-
-      {/* Ghost counter */}
-      <span
-        style={{
-          fontFamily: "'DM Serif Display', serif",
-          fontSize: 72,
-          lineHeight: 1,
-          color: "transparent",
-          WebkitTextStroke: `1.5px ${C.moss}`,
-          opacity: 0.35,
-        }}
-      >
-        06
-      </span>
-    </motion.div>
-
-    {/* Grid — 12-column asymmetric layout */}
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(12, 1fr)",
-        gap: 18,
-      }}
-    >
-      {projects.map((project, i) => (
-        <ProjectCard key={project.title} project={project} index={i} />
-      ))}
-    </div>
-  </div>
-);
 
 export default ProjectsSection;

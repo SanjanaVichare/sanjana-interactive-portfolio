@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Claymorphism Character</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            background: linear-gradient(135deg, #505C45 0%, #FFFFFF 100%);
+            height: 100vh;
+            width: 100vw;
+        }
+
+        canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw !important;
+            height: 100vh !important;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // --- 1. Scene & Renderer ---
+        const scene = new THREE.Scene();
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 6);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        // FIX: append directly to body, not a container div
+        document.body.appendChild(renderer.domElement);
+
+        // --- 2. Materials (MeshStandardMaterial — works without extensions) ---
+        const skinMat = new THREE.MeshStandardMaterial({
+            color: 0xFFFDD0, roughness: 0.65, metalness: 0.0
+        });
+        const hairMat = new THREE.MeshStandardMaterial({
+            color: 0x2e1f0e, roughness: 0.85, metalness: 0.0
+        });
+        const glassesMat = new THREE.MeshStandardMaterial({
+            color: 0x505C45, roughness: 0.4, metalness: 0.15
+        });
+        const sweaterMat = new THREE.MeshStandardMaterial({
+            color: 0x6E7D63, roughness: 0.95, metalness: 0.0
+        });
+        const strapMat = new THREE.MeshStandardMaterial({
+            color: 0xF2C94C, roughness: 0.7, metalness: 0.0
+        });
+        const tabletMat = new THREE.MeshStandardMaterial({
+            color: 0xFFC0CB, roughness: 0.5, metalness: 0.0
+        });
+        const eyeMat = new THREE.MeshStandardMaterial({
+            color: 0x0a0a0a, roughness: 0.1, metalness: 0.1
+        });
+        const eyeWhiteMat = new THREE.MeshStandardMaterial({
+            color: 0xfafafa, roughness: 0.5
+        });
+        const shineMat = new THREE.MeshStandardMaterial({
+            color: 0xffffff, roughness: 0.0
+        });
+        const smileMat = new THREE.MeshStandardMaterial({
+            color: 0xc8956a, roughness: 0.8
+        });
+
+        // --- 3. Character ---
+        const char = new THREE.Group();
+
+        // HEAD
+        const head = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), skinMat);
+        head.position.y = 0.5;
+        head.scale.set(1, 1.05, 0.95);
+        head.castShadow = true;
+        char.add(head);
+
+        // Cheeks
+        [[-0.82, 0.1, 0.5], [0.82, 0.1, 0.5]].forEach(([x, y, z]) => {
+            const c = new THREE.Mesh(new THREE.SphereGeometry(0.32, 16, 12), skinMat);
+            c.position.set(x, y + 0.5, z);
+            c.scale.set(0.8, 0.65, 0.6);
+            char.add(c);
+        });
+
+        // EYE WHITES
+        [[-0.35, 0.55, 0.88], [0.35, 0.55, 0.88]].forEach(([x, y, z]) => {
+            const ew = new THREE.Mesh(new THREE.SphereGeometry(0.16, 20, 16), eyeWhiteMat);
+            ew.position.set(x, y, z);
+            ew.scale.set(1, 1.2, 0.6);
+            char.add(ew);
+
+            // Pupil
+            const ep = new THREE.Mesh(new THREE.SphereGeometry(0.11, 16, 14), eyeMat);
+            ep.position.set(x, y, z + 0.06);
+            ep.scale.set(1, 1.2, 0.5);
+            char.add(ep);
+
+            // Shine
+            const sh = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 6), shineMat);
+            sh.position.set(x + 0.05, y + 0.06, z + 0.1);
+            char.add(sh);
+        });
+
+        // GLASSES FRAMES
+        [[-0.35, 0.55, 0.98], [0.35, 0.55, 0.98]].forEach(([x, y, z]) => {
+            const frame = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.062, 16, 48), glassesMat);
+            frame.position.set(x, y, z);
+            frame.scale.set(1.1, 1.15, 0.5);
+            char.add(frame);
+        });
+
+        // Bridge
+        const bridgeGeo = new THREE.CylinderGeometry(0.028, 0.028, 0.22, 12);
+        bridgeGeo.rotateZ(Math.PI / 2);
+        const bridge = new THREE.Mesh(bridgeGeo, glassesMat);
+        bridge.position.set(0, 0.56, 0.99);
+        char.add(bridge);
+
+        // Temple arms
+        [[-0.82, 0.55, 0.9], [0.82, 0.55, 0.9]].forEach(([x, y, z], i) => {
+            const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.022, 0.44, 8), glassesMat);
+            arm.rotation.z = Math.PI / 2;
+            arm.position.set(x, y, z);
+            arm.rotation.y = i === 0 ? 0.35 : -0.35;
+            char.add(arm);
+        });
+
+        // NOSE
+        const nose = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 8), skinMat);
+        nose.position.set(0, 0.28, 0.97);
+        nose.scale.set(0.8, 0.7, 0.6);
+        char.add(nose);
+
+        // SMILE
+        const smileGeo = new THREE.TorusGeometry(0.18, 0.032, 8, 24, Math.PI);
+        const smile = new THREE.Mesh(smileGeo, smileMat);
+        smile.position.set(0, 0.1, 0.95);
+        smile.rotation.z = Math.PI;
+        char.add(smile);
+
+        // HAIR — top cap
+        const hairTop = new THREE.Mesh(new THREE.SphereGeometry(1.06, 36, 28, 0, Math.PI * 2, 0, Math.PI * 0.58), hairMat);
+        hairTop.position.set(0, 0.62, -0.06);
+        hairTop.scale.set(1, 1.05, 0.97);
+        char.add(hairTop);
+
+        // Hair center part / top
+        const hairCrown = new THREE.Mesh(new THREE.SphereGeometry(1.0, 24, 16), hairMat);
+        hairCrown.position.set(0, 0.88, 0);
+        hairCrown.scale.set(0.88, 0.32, 0.82);
+        char.add(hairCrown);
+
+        // Hair sides (long flowing)
+        [[-1], [1]].forEach(([side]) => {
+            const hs = new THREE.Mesh(new THREE.SphereGeometry(0.38, 16, 14), hairMat);
+            hs.position.set(side * 0.82, 0.0, 0.04);
+            hs.scale.set(0.6, 2.1, 0.55);
+            char.add(hs);
+
+            const hs2 = new THREE.Mesh(new THREE.SphereGeometry(0.3, 14, 12), hairMat);
+            hs2.position.set(side * 0.72, -0.9, 0.1);
+            hs2.scale.set(0.52, 1.5, 0.5);
+            char.add(hs2);
+        });
+
+        // Hair back volume
+        const hairBack = new THREE.Mesh(new THREE.SphereGeometry(0.9, 20, 16), hairMat);
+        hairBack.position.set(0, 0.0, -0.65);
+        hairBack.scale.set(1, 1.5, 0.75);
+        char.add(hairBack);
+
+        // NECK
+        const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.24, 0.3, 14), skinMat);
+        neck.position.set(0, -0.62, 0);
+        char.add(neck);
+
+        // BODY
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.88, 1.5, 28), sweaterMat);
+        body.position.set(0, -1.35, 0);
+        body.scale.set(1, 1, 0.88);
+        body.castShadow = true;
+        char.add(body);
+
+        // Shoulders
+        [[-0.78, -0.82], [0.78, -0.82]].forEach(([x, y]) => {
+            const sh = new THREE.Mesh(new THREE.SphereGeometry(0.3, 14, 12), sweaterMat);
+            sh.position.set(x, y, 0);
+            sh.scale.set(1, 0.82, 0.82);
+            char.add(sh);
+        });
+
+        // ARMS
+        [[-0.85, -1.1, 0.18], [0.85, -1.1, 0.18]].forEach(([x, y, z]) => {
+            const arm = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 10), sweaterMat);
+            arm.position.set(x, y, z);
+            arm.scale.set(0.78, 1.1, 0.75);
+            char.add(arm);
+
+            const hand = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 10), skinMat);
+            hand.position.set(x * 0.88, y - 0.36, z + 0.22);
+            hand.scale.set(0.85, 0.72, 0.72);
+            char.add(hand);
+        });
+
+        // BACKPACK STRAPS
+        [[-0.3], [0.3]].forEach(([x]) => {
+            const strapGeo = new THREE.BoxGeometry(0.12, 1.1, 0.1);
+            const strap = new THREE.Mesh(strapGeo, strapMat);
+            strap.position.set(x, -1.1, 0.68);
+            strap.rotation.x = 0.15;
+            char.add(strap);
+        });
+
+        // TABLET
+        const tablet = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.65, 0.1), tabletMat);
+        tablet.position.set(0, -1.1, 0.88);
+        tablet.rotation.x = -0.22;
+        tablet.castShadow = true;
+        char.add(tablet);
+
+        const tabScreen = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.52, 0.06), new THREE.MeshStandardMaterial({
+            color: 0xe8909e, roughness: 0.4
+        }));
+        tabScreen.position.set(0, -1.1, 0.9);
+        tabScreen.rotation.x = -0.22;
+        char.add(tabScreen);
+
+        char.position.y = -0.2;
+        scene.add(char);
+
+        // --- 4. Lighting (boosted for MeshStandardMaterial) ---
+        scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+
+        const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+        keyLight.position.set(4, 8, 6);
+        keyLight.castShadow = true;
+        keyLight.shadow.mapSize.width = 2048;
+        keyLight.shadow.mapSize.height = 2048;
+        keyLight.shadow.bias = -0.001;
+        scene.add(keyLight);
+
+        const fillLight = new THREE.DirectionalLight(0xdbe9ff, 1.2);
+        fillLight.position.set(-5, 3, 3);
+        scene.add(fillLight);
+
+        const rimLight = new THREE.DirectionalLight(0xffffff, 1.0);
+        rimLight.position.set(0, 5, -6);
+        scene.add(rimLight);
+
+        const botLight = new THREE.DirectionalLight(0xffeedd, 0.6);
+        botLight.position.set(0, -4, 3);
+        scene.add(botLight);
+
+        // --- 5. Mouse tracking ---
+        const mouse = { x: 0, y: 0 };
+        const smooth = { x: 0, y: 0 };
+        window.addEventListener('mousemove', e => {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        // --- 6. Animation ---
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = Date.now() * 0.0015;
+
+            smooth.x += (mouse.x - smooth.x) * 0.055;
+            smooth.y += (mouse.y - smooth.y) * 0.055;
+
+            char.position.y = -0.2 + Math.sin(time) * 0.06;
+            char.rotation.y = smooth.x * 0.35;
+            char.rotation.x = smooth.y * 0.12;
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // --- 7. Resize ---
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+
+</html>

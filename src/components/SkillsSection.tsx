@@ -45,7 +45,7 @@ const SkillsSection = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   return (
-    <div>
+    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "72px 28px 150px" }}>
       <motion.h2
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}

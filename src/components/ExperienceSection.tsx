@@ -29,6 +29,7 @@ function Card({
   icon,
   title,
   subtitle,
+  subtitle2,
   body,
   chips,
   accentColor,
@@ -37,7 +38,8 @@ function Card({
   icon: React.ReactNode;
   title: string;
   subtitle?: string;
-  body?: string;
+  subtitle2?: string;
+  body?: React.ReactNode;
   chips: string[];
   accentColor: string;
 }) {
@@ -109,35 +111,54 @@ function Card({
         }}
       >
         {/* Icon row */}
-        <div className="flex items-start gap-4">
-          <motion.span
-            className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center"
-            style={{ background: accentColor }}
-            whileHover={{ scale: 1.12, rotate: 6 }}
-            transition={{ type: "spring", stiffness: 380, damping: 18 }}
-          >
-            <span style={{ color: C.pageBg }}>{icon}</span>
-          </motion.span>
-
-          <div className="pt-0.5">
-            <h3
-              className="font-bold text-xl leading-snug"
-              style={{
-                color: C.primaryText,
-                fontFamily: "'Playfair Display', Georgia, serif",
-              }}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-start gap-4">
+            <motion.span
+              className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center"
+              style={{ background: accentColor }}
+              whileHover={{ scale: 1.12, rotate: 6 }}
+              transition={{ type: "spring", stiffness: 380, damping: 18 }}
             >
-              {title}
-            </h3>
-            {subtitle && (
-              <p
-                className="text-sm mt-0.5"
-                style={{ color: C.secondaryText, fontFamily: "inherit" }}
+              <span style={{ color: C.pageBg }}>{icon}</span>
+            </motion.span>
+            <div className="pt-0.5">
+              <h3
+                className="font-bold text-xl leading-snug"
+                style={{ color: C.primaryText, fontFamily: "'Playfair Display', Georgia, serif" }}
               >
-                {subtitle}
-              </p>
-            )}
+                {title}
+              </h3>
+              {subtitle && (
+                <p className="text-sm mt-0.5" style={{ color: C.secondaryText }}>
+                  {subtitle}
+                </p>
+              )}
+            </div>
           </div>
+
+          {subtitle2 && (
+            <div className="flex items-start gap-4">
+              <motion.span
+                className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center"
+                style={{ background: C.secondaryText }}
+                whileHover={{ scale: 1.12, rotate: 6 }}
+                transition={{ type: "spring", stiffness: 380, damping: 18 }}
+              >
+                <span style={{ color: C.pageBg }}>{icon}</span>
+              </motion.span>
+              <div className="pt-0.5">
+                <h3
+                  className="font-bold text-xl leading-snug"
+                  style={{ color: C.primaryText, fontFamily: "'Playfair Display', Georgia, serif" }}
+                >
+                  Diploma in Computer Engineering
+                </h3>
+                <p className="text-sm mt-0.5" style={{ color: C.secondaryText }}>
+                  {subtitle2}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Body */}
@@ -243,8 +264,26 @@ const ExperienceSection = () => {
           accentColor={C.accent}
           icon={<Briefcase size={20} />}
           title="Freelance Developer"
-          body="Worked as part of a development team building mobile and web applications with features like employee management systems, real-time tracking, and database-driven platforms."
-          chips={["Flutter Apps", "Backend APIs", "Database Management", "UI Design", "Application Logic"]}
+          body={
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div>
+                <span style={{ fontWeight: 700, color: "#0A3323" }}>SV Enterprises</span>
+                <span style={{ fontSize: "0.75rem", color: "#839958", marginLeft: "8px" }}>Apr – Dec 2025</span>
+                <p style={{ margin: "3px 0 0", fontSize: "0.88rem", opacity: 0.85 }}>Flutter mobile app for employee and vehicle management with admin dashboard and location tracking.</p>
+              </div>
+              <div>
+                <span style={{ fontWeight: 700, color: "#0A3323" }}>Hometask</span>
+                <span style={{ fontSize: "0.75rem", color: "#839958", marginLeft: "8px" }}>Jan 2026</span>
+                <p style={{ margin: "3px 0 0", fontSize: "0.88rem", opacity: 0.85 }}>Facility management website for a cleaning operations company.</p>
+              </div>
+              <div>
+                <span style={{ fontWeight: 700, color: "#0A3323" }}>ACE</span>
+                <span style={{ fontSize: "0.75rem", color: "#839958", marginLeft: "8px" }}>Apr – May 2026</span>
+                <p style={{ margin: "3px 0 0", fontSize: "0.88rem", opacity: 0.85 }}>Websites for a sports organization and their football club.</p>
+              </div>
+            </div>
+          }
+          chips={[]}
         />
 
         <Card
@@ -252,8 +291,9 @@ const ExperienceSection = () => {
           accentColor={C.highlight}
           icon={<GraduationCap size={20} />}
           title="Computer Engineering"
-          subtitle="Bachelor's Degree — Currently Pursuing"
-          chips={["Software Development", "Artificial Intelligence", "Mobile App Development"]}
+          subtitle="B.E. · Datta Meghe College of Engineering — Pursuing"
+          subtitle2="Diploma · Vidyalankar Polytechnic · 2025"
+          chips={["Software Development", "Computer Engineering"]}
         />
       </div>
 

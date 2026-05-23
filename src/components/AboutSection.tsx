@@ -395,8 +395,7 @@ export default function AboutSection() {
               Creative Software Developer
             </div>
 
-            <p style={{ fontSize: "13.5px", lineHeight: 1.8, color: "#2d4a3a", margin: 0, paddingBottom: "80px" }}>
-              Creative developer who builds apps, games, and experimental systems combining technology with creativity.
+            <p style={{ fontSize: "13.5px", lineHeight: 1.8, color: "#2d4a3a", margin: 0 }}>              Creative developer who builds apps, games, and experimental systems combining technology with creativity.
             </p>
           </div>
         </motion.div>
