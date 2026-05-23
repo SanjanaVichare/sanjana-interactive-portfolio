@@ -97,7 +97,7 @@ type CodeLine = { tokens: Token[] };
 const CODE_LINES: CodeLine[] = [
   { tokens: [{ t: "cm", v: "// who's building this?" }] },
   { tokens: [{ t: "kw", v: "const" }, { t: "plain", v: " me = {" }] },
-  { tokens: [{ t: "plain", v: "  role: " }, { t: "str", v: '"Full-Stack Developer"' }, { t: "plain", v: "," }] },
+  { tokens: [{ t: "plain", v: "  role: " }, { t: "str", v: '"Flutter dev + game maker"' }, { t: "plain", v: "," }] },
   { tokens: [{ t: "plain", v: "  loves: " }, { t: "str", v: '"turning ideas into software"' }, { t: "plain", v: "," }] },
   { tokens: [{ t: "plain", v: "  status: " }, { t: "str", v: '"always shipping 🚀"' }, { t: "plain", v: "," }] },
   { tokens: [{ t: "plain", v: "}" }] },
@@ -142,6 +142,7 @@ function TypingCode() {
     return () => clearTimeout(t);
   }, []);
 
+  // re-group into lines
   const lines: { char: string; color: string }[][] = [[]];
   chars.forEach((c) => {
     if (c.isNewline) lines.push([]);
@@ -158,11 +159,13 @@ function TypingCode() {
       lineHeight: 1.85,
       border: "1px solid rgba(255,255,255,0.06)",
     }}>
+      {/* traffic lights */}
       <div style={{ display: "flex", gap: "6px", marginBottom: "14px" }}>
         {["#ff5f57", "#febc2e", "#28c840"].map((bg) => (
           <div key={bg} style={{ width: 10, height: 10, borderRadius: "50%", background: bg }} />
         ))}
       </div>
+
       {lines.map((line, li) => (
         <div key={li} style={{ minHeight: "1.6em" }}>
           {line.map((c, ci) => (
@@ -183,49 +186,23 @@ function TypingCode() {
 
 // ── Now Playing ──────────────────────────────────────────────────────────────
 
-const SONGS = [
-  { title: "Ditto", artist: "NewJeans", album: "OMG", duration: 185 },
-  { title: "Gone", artist: "ROSÉ", album: "rosie", duration: 197 },
-  { title: "7 rings", artist: "Ariana Grande", album: "thank u, next", duration: 178 },
-  { title: "Stitches", artist: "Shawn Mendes", album: "Handwritten", duration: 207 },
-  { title: "TGIF", artist: "Katy Perry", album: "143", duration: 177 },
-  { title: "Youngblood", artist: "5 Seconds of Summer", album: "Youngblood", duration: 222 },
-  { title: "On the Floor", artist: "Jennifer Lopez", album: "Love?", duration: 234 },
-];
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-const SHUFFLED = shuffle(SONGS);
+const SONG = {
+  title: "Redbone",
+  artist: "Childish Gambino",
+  album: "Awaken, My Love!",
+  duration: 326,
+  startAt: 94,
+};
 
 function NowPlaying() {
-  const [idx, setIdx] = useState(0);
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(SONG.startAt);
   const [playing, setPlaying] = useState(true);
-
-  const SONG = SHUFFLED[idx];
-
-  useEffect(() => { setProgress(0); }, [idx]);
 
   useEffect(() => {
     if (!playing) return;
-    const id = setInterval(() => {
-      setProgress((p) => {
-        if (p >= SONG.duration) {
-          setIdx((i) => (i + 1) % SHUFFLED.length);
-          return 0;
-        }
-        return p + 1;
-      });
-    }, 1000);
+    const id = setInterval(() => setProgress((p) => (p >= SONG.duration ? 0 : p + 1)), 1000);
     return () => clearInterval(id);
-  }, [playing, SONG]);
+  }, [playing]);
 
   const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
   const pct = Math.round((progress / SONG.duration) * 100);
@@ -242,6 +219,7 @@ function NowPlaying() {
         padding: "18px 20px",
       }}
     >
+      {/* label */}
       <div style={{ display: "flex", alignItems: "center", gap: "7px", marginBottom: "12px" }}>
         <motion.div
           animate={playing ? { rotate: 360 } : {}}
@@ -254,8 +232,9 @@ function NowPlaying() {
         </span>
       </div>
 
+      {/* track */}
       <div style={{ marginBottom: "14px" }}>
-        <div style={{ fontSize: "1rem", fontWeight: 700, color: C.primaryText, fontFamily: "'Crimson Pro', Georgia, serif", lineHeight: 1.2 }}>
+        <div style={{ fontSize: "1rem", fontWeight: 700, color: C.primaryText, fontFamily: "'Playfair Display', Georgia, serif", lineHeight: 1.2 }}>
           {SONG.title}
         </div>
         <div style={{ fontSize: "0.8rem", color: C.secondaryText, fontFamily: "'DM Sans', sans-serif", marginTop: "3px" }}>
@@ -263,6 +242,7 @@ function NowPlaying() {
         </div>
       </div>
 
+      {/* progress */}
       <div
         onClick={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
@@ -273,23 +253,19 @@ function NowPlaying() {
         <div style={{ width: `${pct}%`, height: "100%", background: C.highlight, borderRadius: "4px", transition: "width 1s linear" }} />
       </div>
 
+      {/* time + controls */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span style={{ fontSize: "0.72rem", color: C.secondaryText, fontFamily: "'DM Sans', sans-serif" }}>{fmt(progress)}</span>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <button onClick={() => setIdx((i) => (i - 1 + SHUFFLED.length) % SHUFFLED.length)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill={C.accent}><polygon points="19,3 5,12 19,21" /><rect x="3" y="3" width="3" height="18" rx="1" /></svg>
-          </button>
-          <button onClick={() => setPlaying((p) => !p)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}>
-            {playing ? (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill={C.accent}><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
-            ) : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill={C.accent}><polygon points="5,3 19,12 5,21" /></svg>
-            )}
-          </button>
-          <button onClick={() => setIdx((i) => (i + 1) % SHUFFLED.length)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill={C.accent}><polygon points="5,3 19,12 5,21" /><rect x="18" y="3" width="3" height="18" rx="1" /></svg>
-          </button>
-        </div>
+        <button
+          onClick={() => setPlaying((p) => !p)}
+          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}
+        >
+          {playing ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill={C.accent}><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill={C.accent}><polygon points="5,3 19,12 5,21" /></svg>
+          )}
+        </button>
         <span style={{ fontSize: "0.72rem", color: C.secondaryText, fontFamily: "'DM Sans', sans-serif" }}>{fmt(SONG.duration)}</span>
       </div>
     </motion.div>
@@ -315,6 +291,7 @@ const HeroSection = () => {
       overflow: "hidden",
       background: C.pageBg,
     }}>
+      {/* bg radials */}
       <div style={{
         position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none",
         background: `
@@ -343,20 +320,19 @@ const HeroSection = () => {
             fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.2em",
             textTransform: "uppercase", color: C.secondaryText, fontFamily: "'DM Sans', sans-serif",
           }}>
-            Web Developer · App Developer · Hobbyist Game Dev
+            Mobile Developer • Flutter • Game Dev
           </motion.p>
 
           <motion.h1 {...fadeUp(0.28)} style={{
             fontSize: "clamp(3rem, 6vw, 5rem)", fontWeight: 700, lineHeight: 1.08,
-            color: C.primaryText, fontFamily: "'Crimson Pro', Georgia, serif", margin: 0,
+            color: C.primaryText, fontFamily: "'Playfair Display', Georgia, serif", margin: 0,
           }}>
-            Sanjana<br />
-            <em style={{ fontStyle: "italic", color: C.accent }}>Vichare</em>
+            Sanjana<br /><em>Vichare</em>
           </motion.h1>
 
           <motion.p {...fadeUp(0.46)} style={{
             fontSize: "1.05rem", color: C.accent, opacity: 0.82,
-            maxWidth: "480px", lineHeight: 1.75, fontFamily: "'DM Sans', sans-serif",
+            maxWidth: "480px", lineHeight: 1.75, fontFamily: "'DM Sans', sans-serif", textAlign: "justify",
           }}>
             I&apos;m a college student and developer passionate about crafting
             interactive, human-centred technology — from Flutter mobile apps and
@@ -364,11 +340,11 @@ const HeroSection = () => {
             into polished, living software.
           </motion.p>
 
-          <motion.div {...fadeUp(0.56)} style={{ display: "flex", flexWrap: "nowrap", gap: "0.75rem", paddingTop: "0.25rem" }}>
+          <motion.div {...fadeUp(0.56)} style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", paddingTop: "0.25rem" }}>
             <MagnetWrap>
               <motion.button
                 onMouseEnter={() => setHovView(true)} onMouseLeave={() => setHovView(false)}
-                onClick={() => document.getElementById("projects-section")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
                 whileTap={{ scale: 0.95 }}
                 style={{
                   ...pill, background: hovView ? C.primaryText : C.accent, color: C.pageBg,
@@ -378,6 +354,19 @@ const HeroSection = () => {
                 <Icon hov={hovView}><ArrowDown size={16} /></Icon>
                 View Projects
               </motion.button>
+            </MagnetWrap>
+
+            <MagnetWrap>
+              <motion.a href="https://github.com/SanjanaVichare" target="_blank" rel="noopener noreferrer"
+                onMouseEnter={() => setHovGH(true)} onMouseLeave={() => setHovGH(false)}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  ...pill, border: `1.5px solid ${hovGH ? C.accent : C.border}`,
+                  background: hovGH ? "rgba(16,86,102,0.07)" : "transparent", color: C.accent
+                }}
+              >
+                <Icon hov={hovGH}><Github size={16} /></Icon>GitHub
+              </motion.a>
             </MagnetWrap>
 
             <MagnetWrap>
@@ -420,7 +409,7 @@ const HeroSection = () => {
         </motion.div>
       </motion.div>
 
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,600;0,700;1,600;1,700&family=DM+Sans:wght@400;600;700&family=DM+Mono:wght@400&display=swap');`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@400;600;700&family=DM+Mono:wght@400&display=swap');`}</style>
     </div>
   );
 };

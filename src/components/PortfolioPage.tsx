@@ -329,7 +329,7 @@ function NowPlaying() {
             </div>
 
             <div style={{ marginBottom: "12px" }}>
-                <div style={{ fontSize: "0.92rem", fontWeight: 700, color: C.primaryText, fontFamily: "'Ciimss rP,egia, serif", lineHeight: 1.2 }}>
+                <div style={{ fontSize: "0.92rem", fontWeight: 700, color: C.primaryText, fontFamily: "'Playfair Display', Georgia, serif", lineHeight: 1.2 }}>
                     {SONG.title}
                 </div>
                 <div style={{ fontSize: "0.75rem", color: C.moss, fontFamily: "'DM Sans', sans-serif", marginTop: "3px" }}>
@@ -606,7 +606,7 @@ function HeroSection({ heroSlotRef }: { heroSlotRef: React.RefObject<HTMLDivElem
                         </motion.p>
 
                         <motion.h1 {...fadeUp(0.28)} style={{
-                            fontFamily: "'Ciimss rP,egia, serif",
+                            fontFamily: "'Playfair Display', Georgia, serif",
                             fontSize: "clamp(3.2rem, 6.5vw, 5.5rem)",
                             fontWeight: 800, lineHeight: 1.04,
                             letterSpacing: "-0.02em", color: C.primaryText, margin: 0,
@@ -739,7 +739,7 @@ function AboutSection({ profileCardRef }: { profileCardRef: React.RefObject<HTML
         <section id="about-section" style={{ background: C.pageBg, padding: "0 clamp(1.5rem, 5vw, 4rem) clamp(3rem, 8vw, 6rem)" }}>
             <div style={{ maxWidth: 1120, margin: "0 auto" }}>
                 <motion.h2 {...scrollFadeUp(0)} style={{
-                    fontFamily: "'Crimson Pro', Georgia, serif",
+                    fontFamily: "'Playfair Display', Georgia, serif",
                     fontSize: "clamp(2.4rem, 4.5vw, 3.6rem)", fontWeight: 700,
                     color: C.primaryText, textAlign: "center",
                     letterSpacing: "-0.025em", marginBottom: "3rem",
@@ -906,7 +906,7 @@ export default function PortfolioPage() {
     return (
         <>
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,600;0,700;1,600;1,700&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
                 *, *::before, *::after { box-sizing: border-box; }
                 html { scroll-behavior: smooth; }
                 body { margin: 0; background: #F7F4D5; }
