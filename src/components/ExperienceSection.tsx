@@ -2,10 +2,8 @@ import { useState, useRef, useCallback } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Briefcase, GraduationCap } from "lucide-react";
 
-/* ─── Design tokens ─── */
 const C = {
   pageBg: "#F7F4D5",
-  cardBg: "#FFFFFF",
   border: "rgba(10,51,35,0.15)",
   primaryText: "#0A3323",
   secondaryText: "#839958",
@@ -13,17 +11,6 @@ const C = {
   highlight: "#D3968C",
 };
 
-/* ─── Fade-up variant ─── */
-const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
-  show: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] },
-  }),
-};
-
-/* ─── Interactive card ─── */
 function Card({
   index,
   icon,
@@ -44,8 +31,6 @@ function Card({
   accentColor: string;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
-
-  /* Mouse-glow position */
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const gx = useSpring(mx, { stiffness: 180, damping: 24 });
@@ -61,19 +46,18 @@ function Card({
     [mx, my]
   );
 
-  /* 3-D tilt */
   const rotX = useTransform(gy, [0, 320], [4, -4]);
   const rotY = useTransform(gx, [0, 480], [-4, 4]);
-
   const [hovered, setHovered] = useState(false);
 
   return (
     <motion.div
       ref={cardRef}
       custom={index}
-      initial="hidden"
-      whileInView="show"
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.6, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -81,15 +65,20 @@ function Card({
         rotateX: hovered ? rotX : 0,
         rotateY: hovered ? rotY : 0,
         transformPerspective: 900,
+        position: "relative",
+        borderRadius: "1rem",
+        overflow: "hidden",
+        cursor: "default",
       }}
-      transition={{ type: "spring", stiffness: 260, damping: 22 }}
-      className="relative rounded-2xl overflow-hidden cursor-default"
       whileHover={{ y: -6 }}
     >
       {/* Ambient glow */}
       <motion.div
-        className="pointer-events-none absolute inset-0 rounded-2xl"
         style={{
+          pointerEvents: "none",
+          position: "absolute",
+          inset: 0,
+          borderRadius: "1rem",
           background: `radial-gradient(260px circle at ${gx}px ${gy}px, rgba(131,153,88,0.13) 0%, transparent 70%)`,
           opacity: hovered ? 1 : 0,
           transition: "opacity 0.3s",
@@ -99,61 +88,77 @@ function Card({
 
       {/* Card shell */}
       <div
-        className="relative z-10 p-8 h-full flex flex-col gap-5"
         style={{
+          position: "relative",
+          zIndex: 10,
+          padding: "2rem",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          gap: "1.25rem",
           background: C.pageBg,
           border: `1px solid ${hovered ? C.secondaryText : C.border}`,
           borderRadius: "1rem",
           boxShadow: hovered
-            ? `0 18px 48px rgba(10,51,35,0.16), 0 4px 12px rgba(10,51,35,0.08)`
-            : `0 8px 24px rgba(10,51,35,0.07)`,
+            ? "0 18px 48px rgba(10,51,35,0.16), 0 4px 12px rgba(10,51,35,0.08)"
+            : "0 8px 24px rgba(10,51,35,0.07)",
           transition: "border-color 0.3s, box-shadow 0.4s",
         }}
       >
-        {/* Icon row */}
-        <div className="flex flex-col gap-4">
-          <div className="flex items-start gap-4">
+        {/* Icon rows */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          {/* First entry */}
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
             <motion.span
-              className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center"
-              style={{ background: accentColor }}
+              style={{
+                flexShrink: 0, width: 44, height: 44, borderRadius: "0.75rem",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: accentColor,
+              }}
               whileHover={{ scale: 1.12, rotate: 6 }}
               transition={{ type: "spring", stiffness: 380, damping: 18 }}
             >
               <span style={{ color: C.pageBg }}>{icon}</span>
             </motion.span>
-            <div className="pt-0.5">
-              <h3
-                className="font-bold text-xl leading-snug"
-                style={{ color: C.primaryText, fontFamily: "'Crimson Pro', Georgia, serif
-              >
+            <div style={{ paddingTop: "2px" }}>
+              <h3 style={{
+                fontWeight: 700, fontSize: "1.2rem", lineHeight: 1.3,
+                color: C.primaryText, fontFamily: "'Crimson Pro', Georgia, serif",
+                margin: 0,
+              }}>
                 {title}
               </h3>
               {subtitle && (
-                <p className="text-sm mt-0.5" style={{ color: C.secondaryText }}>
+                <p style={{ fontSize: "0.875rem", marginTop: "2px", color: C.secondaryText, margin: 0 }}>
                   {subtitle}
                 </p>
               )}
             </div>
           </div>
 
+          {/* Second entry (subtitle2) */}
           {subtitle2 && (
-            <div className="flex items-start gap-4">
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
               <motion.span
-                className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center"
-                style={{ background: C.secondaryText }}
+                style={{
+                  flexShrink: 0, width: 44, height: 44, borderRadius: "0.75rem",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  background: C.secondaryText,
+                }}
                 whileHover={{ scale: 1.12, rotate: 6 }}
                 transition={{ type: "spring", stiffness: 380, damping: 18 }}
               >
                 <span style={{ color: C.pageBg }}>{icon}</span>
               </motion.span>
-              <div className="pt-0.5">
-                <h3
-                  className="font-bold text-xl leading-snug"
-                  style={{ color: C.primaryText, fontFamily: "'Crimson Pro', Georgia, serif
-                >
+              <div style={{ paddingTop: "2px" }}>
+                <h3 style={{
+                  fontWeight: 700, fontSize: "1.2rem", lineHeight: 1.3,
+                  color: C.primaryText, fontFamily: "'Crimson Pro', Georgia, serif",
+                  margin: 0,
+                }}>
                   Diploma in Computer Engineering
                 </h3>
-                <p className="text-sm mt-0.5" style={{ color: C.secondaryText }}>
+                <p style={{ fontSize: "0.875rem", marginTop: "2px", color: C.secondaryText, margin: 0 }}>
                   {subtitle2}
                 </p>
               </div>
@@ -163,46 +168,42 @@ function Card({
 
         {/* Body */}
         {body && (
-          <p
-            className="text-[0.93rem] leading-relaxed"
-            style={{ color: C.accent, opacity: 0.82 }}
-          >
+          <div style={{ color: C.accent, opacity: 0.82, fontSize: "0.93rem", lineHeight: 1.6 }}>
             {body}
-          </p>
+          </div>
         )}
 
         {/* Chips */}
-        <div className="flex flex-wrap gap-2 mt-auto pt-1">
-          {chips.map((chip, ci) => (
-            <motion.span
-              key={chip}
-              initial={{ opacity: 0, scale: 0.85 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 + ci * 0.04 + 0.3, duration: 0.3 }}
-              whileHover={{ scale: 1.08, backgroundColor: C.primaryText }}
-              style={{
-                background: C.accent,
-                color: C.pageBg,
-                borderRadius: "999px",
-                fontSize: "0.72rem",
-                fontWeight: 600,
-                letterSpacing: "0.03em",
-                padding: "4px 12px",
-                display: "inline-block",
-                cursor: "default",
-                transition: "background 0.2s",
-              }}
-            >
-              {chip}
-            </motion.span>
-          ))}
-        </div>
+        {chips.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "auto", paddingTop: "0.25rem" }}>
+            {chips.map((chip, ci) => (
+              <motion.span
+                key={chip}
+                initial={{ opacity: 0, scale: 0.85 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 + ci * 0.04 + 0.3, duration: 0.3 }}
+                whileHover={{ scale: 1.08, backgroundColor: C.primaryText }}
+                style={{
+                  background: C.accent, color: C.pageBg, borderRadius: "999px",
+                  fontSize: "0.72rem", fontWeight: 600, letterSpacing: "0.03em",
+                  padding: "4px 12px", display: "inline-block",
+                  cursor: "default", transition: "background 0.2s",
+                }}
+              >
+                {chip}
+              </motion.span>
+            ))}
+          </div>
+        )}
 
         {/* Bottom accent bar */}
         <motion.div
-          className="absolute bottom-0 left-0 h-[3px] rounded-b-2xl"
-          style={{ background: `linear-gradient(90deg, ${accentColor}, ${C.highlight})` }}
+          style={{
+            position: "absolute", bottom: 0, left: 0,
+            height: "3px", borderRadius: "0 0 1rem 1rem",
+            background: `linear-gradient(90deg, ${accentColor}, ${C.highlight})`,
+          }}
           initial={{ scaleX: 0, originX: 0 }}
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}
@@ -213,40 +214,45 @@ function Card({
   );
 }
 
-/* ─── Section ─── */
 const ExperienceSection = () => {
   return (
     <section
-      className="w-full min-h-screen flex flex-col items-center justify-center px-6 py-20"
-      style={{ background: C.pageBg }}
+      id="experience-section"
+      style={{
+        width: "100%", minHeight: "100vh",
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center",
+        padding: "5rem 1.5rem", background: C.pageBg,
+      }}
     >
-      {/* Section heading */}
+      {/* Heading */}
       <motion.div
-        className="text-center mb-14"
+        style={{ textAlign: "center", marginBottom: "3.5rem" }}
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       >
-        <p
-          className="text-xs tracking-[0.22em] uppercase mb-3 font-semibold"
-          style={{ color: C.secondaryText }}
-        >
+        <p style={{
+          fontSize: "0.75rem", letterSpacing: "0.22em", textTransform: "uppercase",
+          marginBottom: "0.75rem", fontWeight: 600, color: C.secondaryText,
+          fontFamily: "'DM Sans', sans-serif",
+        }}>
           Background
         </p>
-        <h2
-          className="text-4xl sm:text-5xl font-bold"
-          style={{
-            color: C.primaryText,
-            fontFamily: "'Crimson Pro', Georgia, serif
-          }}
-        >
+        <h2 style={{
+          fontSize: "clamp(2rem, 4.5vw, 3rem)", fontWeight: 700,
+          color: C.primaryText, fontFamily: "'Crimson Pro', Georgia, serif",
+          margin: 0,
+        }}>
           Experience &amp; Education
         </h2>
-        {/* decorative underline */}
         <motion.div
-          className="mx-auto mt-4 h-[2px] rounded-full"
-          style={{ background: `linear-gradient(90deg, ${C.accent}, ${C.highlight})` }}
+          style={{
+            margin: "1rem auto 0",
+            height: "2px", borderRadius: "999px",
+            background: `linear-gradient(90deg, ${C.accent}, ${C.highlight})`,
+          }}
           initial={{ width: 0 }}
           whileInView={{ width: "72px" }}
           viewport={{ once: true }}
@@ -254,11 +260,12 @@ const ExperienceSection = () => {
         />
       </motion.div>
 
-      {/* Cards grid */}
-      <div
-        className="w-full max-w-4xl grid gap-7"
-        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}
-      >
+      {/* Cards */}
+      <div style={{
+        width: "100%", maxWidth: "56rem",
+        display: "grid", gap: "1.75rem",
+        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+      }}>
         <Card
           index={0}
           accentColor={C.accent}
@@ -267,18 +274,18 @@ const ExperienceSection = () => {
           body={
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               <div>
-                <span style={{ fontWeight: 700, color: "#0A3323" }}>SV Enterprises</span>
-                <span style={{ fontSize: "0.75rem", color: "#839958", marginLeft: "8px" }}>Apr – Dec 2025</span>
+                <span style={{ fontWeight: 700, color: C.primaryText }}>SV Enterprises</span>
+                <span style={{ fontSize: "0.75rem", color: C.secondaryText, marginLeft: "8px" }}>Apr – Dec 2025</span>
                 <p style={{ margin: "3px 0 0", fontSize: "0.88rem", opacity: 0.85 }}>Flutter mobile app for employee and vehicle management with admin dashboard and location tracking.</p>
               </div>
               <div>
-                <span style={{ fontWeight: 700, color: "#0A3323" }}>Hometask</span>
-                <span style={{ fontSize: "0.75rem", color: "#839958", marginLeft: "8px" }}>Jan 2026</span>
+                <span style={{ fontWeight: 700, color: C.primaryText }}>Hometask</span>
+                <span style={{ fontSize: "0.75rem", color: C.secondaryText, marginLeft: "8px" }}>Jan 2026</span>
                 <p style={{ margin: "3px 0 0", fontSize: "0.88rem", opacity: 0.85 }}>Facility management website for a cleaning operations company.</p>
               </div>
               <div>
-                <span style={{ fontWeight: 700, color: "#0A3323" }}>ACE</span>
-                <span style={{ fontSize: "0.75rem", color: "#839958", marginLeft: "8px" }}>Apr – May 2026</span>
+                <span style={{ fontWeight: 700, color: C.primaryText }}>ACE</span>
+                <span style={{ fontSize: "0.75rem", color: C.secondaryText, marginLeft: "8px" }}>Apr – May 2026</span>
                 <p style={{ margin: "3px 0 0", fontSize: "0.88rem", opacity: 0.85 }}>Websites for a sports organization and their football club.</p>
               </div>
             </div>
@@ -292,16 +299,12 @@ const ExperienceSection = () => {
           icon={<GraduationCap size={20} />}
           title="Computer Engineering"
           subtitle="B.E. · Datta Meghe College of Engineering — Pursuing"
-          subtitle2="Diploma · Vidyalankar Polytechnic · 2025"
+          subtitle2="Vidyalankar Polytechnic · 2025"
           chips={["Software Development", "Computer Engineering"]}
         />
       </div>
 
-      {/* Google Fonts */}
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');`}
-
-
-      </style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,600;0,700;1,600;1,700&family=DM+Sans:wght@400;600;700&display=swap');`}</style>
     </section>
   );
 };
