@@ -611,7 +611,8 @@ function HeroSection({ heroSlotRef }: { heroSlotRef: React.RefObject<HTMLDivElem
                             fontWeight: 800, lineHeight: 1.04,
                             letterSpacing: "-0.02em", color: C.primaryText, margin: 0,
                         }}>
-                            Sanjana<br></br>Vichare
+                            Sanjana<br />
+                            <em style={{ color: C.accent, fontStyle: "italic" }}>Vichare</em>
                         </motion.h1>
 
                         <motion.p {...fadeUp(0.42)} style={{
