@@ -1312,7 +1312,7 @@ function HeroSection({
                             display: "flex",
                             flexDirection: "column",
                             gap: "1.2rem",
-                            order: isMobile ? 1 : 0,
+                            order: 0,
                         }}
                     >
                         <motion.p
@@ -1465,7 +1465,7 @@ function HeroSection({
                             display: "flex",
                             flexDirection: "column",
                             gap: 16,
-                            order: isMobile ? 0 : 1,
+                            order: 1,
                         }}
                     >
                         <TypingCode />
